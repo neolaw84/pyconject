@@ -1,0 +1,5 @@
+black
+twine
+build
+pytest
+bump-my-version
