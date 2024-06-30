@@ -11,10 +11,11 @@ from pyconject.configs import Configs
 
 configs = Configs()
 
+
 def pyconject(func=None):
-    
+
     configs.register(func=func)
-    
+
     def decorator(_func):
         @wraps(_func)
         def wrapper(*args, **kwargs):
@@ -31,7 +32,8 @@ def pyconject(func=None):
             sig = inspect.signature(_func)
             count = 0
             for param_name, param in sig.parameters.items():
-                if count < len(args): continue # user defined has highest priority; skipping
+                if count < len(args):
+                    continue  # user defined has highest priority; skipping
                 if param_name in func_config and param_name not in kwargs:
                     kwargs[param_name] = func_config[param_name]
 
@@ -44,8 +46,10 @@ def pyconject(func=None):
     else:
         return decorator(func)
 
+
 def resolve(filename=None, target=None):
     configs.resolve(filename, target)
+
 
 def reset():
     global configs
