@@ -7,7 +7,7 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.WARNING)
 
-from pyconject.configs import Configs
+from pyconject._configs import Configs
 
 configs = Configs()
 
@@ -56,9 +56,9 @@ def reset():
     configs = Configs()
 
 
-def generate_config(func, module_name="my_package.my_module"):
+def generate_config(func):
     config = {}
-    module_parts = module_name.split(".")
+    module_parts = func.__module__.split(".")
     current = config
     for part in module_parts:
         current = current.setdefault(part, {})

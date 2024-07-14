@@ -1,198 +1,99 @@
-from enum import Enum
 
-from pathlib import Path
 import inspect
+from importlib import import_module
+from pathlib import Path 
+
+from typing import List, Callable
 
 import logging
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.WARN)
 
-from typing import List, Dict
+_TARGETS = ["", "dev", "stg", "prd"]
+_SUFFICES = [f"-{tgt}" if tgt else "" for tgt in _TARGETS]
 
-import yaml
+def _default_dev_defined_configs(module_file_path, default):
+    return {tgt: str(module_file_path.parent / str(default + sfx + ".yml")) for tgt, sfx in zip(_TARGETS, _SUFFICES)}
 
+class ConfigPath:
+    def __init__(self, config:dict, module_prefix:str, dev_defined:List[str]):
+        self.config = config 
+        self.module_prefix = module_prefix
+        self.dev_defined = dev_defined
 
-def _merge_configs(configs_high: dict, configs_low):
-    merged = configs_high.copy()
-    for key, value in configs_low.items():
-        if key in merged:
-            if isinstance(merged[key], dict) and isinstance(value, dict):
-                merged[key] = _merge_configs(merged[key], value)
-        else:
-
-            merged[key] = value
-
-    return merged
-
-
-_PYCONJECT = "@pyconject"
-_PYCONJECT_INIT = "initialized"
-_PYCONJECT_MODULE = "module"
-_PYCONJECT_FUNCS = "funcs"
-_PYCONJECT_CONFIG_PATH = "pyconject_configs"
-
-
-class Configs:
-    def __init__(self):
-        self.configs = {}
-        self.override_by_target = False
-        self.override_by_filename = False
-        self.resolve_user_configs = False
-        self.resolve_called = False
-
-    def _create_or_get_module_config(self, func):
-        module_parts = func.__module__.split(".")
-
-        module_config = self.configs
-        for mp in module_parts:
-            if mp not in module_config.keys():
-                module_config[mp] = {}
-            module_config = module_config[mp]
-
-        if _PYCONJECT not in module_config:
-            module_config[_PYCONJECT] = {
-                _PYCONJECT_INIT: False,
-                _PYCONJECT_MODULE: inspect.getmodule(func),
-                _PYCONJECT_FUNCS: [func],
-            }
-        else:
-            if module_config[_PYCONJECT][_PYCONJECT_INIT]:
-                logger.warn(
-                    f"{func.__name__} in {func.__module__} is registered in pyconject after pyconject has already initialized configs for {func.__module__}."
-                )
-                logger.warn(f"This behavior is undefined.")
-                logger.warn(f"{func.__name__} configs may not be initialized properly.")
-            module_config[_PYCONJECT][_PYCONJECT_FUNCS].append(func)
-
-        return module_config
-
-    def register(self, func):
-        module_config = self._create_or_get_module_config(func)
-
-    def resolve(self, filename=None, target=None):
-        self.override_by_filename = filename is not None
-        self.override_by_target = target is not None
-        self.filename = filename
-        self.target = target if target is not None else ""
-        self.resolve_called = True
-
-    def _resolve_module_configs(self, module_configs):
-        module = module_configs[_PYCONJECT][_PYCONJECT_MODULE]
-
-        module_path = Path(inspect.getfile(module))
-        module_dir = module_path.parent
-        module_name = module_path.stem
-
-        default_module_config_path = {
-            k: module_dir.joinpath(f"{module_name}-{k}-configs.yml")
-            for k in ["dev", "stg", "prd"]
-        }
-        default_module_config_path[""] = module_dir.joinpath(
-            f"{module_name}-configs.yml"
-        )
-
-        if hasattr(module, _PYCONJECT_CONFIG_PATH):
-            # if dev defines module_config_path
-            dev_module_config_path = getattr(module, _PYCONJECT_CONFIG_PATH)
-            if isinstance(dev_module_config_path, dict):
-                module_config_path = _merge_configs(
-                    dev_module_config_path, default_module_config_path
-                )
-            elif isinstance(dev_module_config_path, str):
-                module_config_path = _merge_configs(
-                    {"": dev_module_config_path}, default_module_config_path
-                )
-        else:
-            dev_module_config_path = None
-            module_config_path = default_module_config_path
-
-        assert isinstance(module_config_path, dict)
-
+    def __eq__(self, value: object) -> bool:
+        if not isinstance(value, ConfigPath): return False 
+        if self.config != value.config: return False
+        if self.module_prefix != value.module_prefix: return False 
+        if set(self.dev_defined) != set(value.dev_defined): return False 
+        return True 
+    
+def _format_dev_defined_configs(module, default="pyconject", remove_ext:bool=True):
+    module_file_path = Path(module.__file__)
+    tmp_configs = _default_dev_defined_configs(module_file_path, default)
+    dev_defined = []
+    if hasattr(module, "pyconject"):
         try:
-            eff_module_config_path = module_config_path[self.target]
-            with open(eff_module_config_path, "rt") as f:
-                _module_configs = yaml.safe_load(f)
-            # this is safe because this is the lowest level configs (to be overriden)
-            for k, v in _module_configs.items():
-                module_configs[k] = v
-        except KeyError as e:
-            if self.override_by_target:
-                logger.warn(
-                    f"Developer of module {module} does not specify configs for target {self.target}."
-                )
-        except FileNotFoundError as e:
-            if self.override_by_target:
-                logger.warn(
-                    f"Unable to find {eff_module_config_path} for {self.target} to configure module {module}."
-                )
+            fname = getattr(module, "pyconject")
+            
+            if isinstance(fname, str):
+                if fname.endswith(".yml") and remove_ext: fname = fname.replace(".yml", "")
+                tmp_configs[""] = str(module_file_path.parent / str(fname + ".yml"))
+                dev_defined = [""]
+            elif isinstance(fname, dict):
+                tmp_configs.update(fname)
+                dev_defined = list(fname.keys())
+                # for tgt in _TARGETS:
+                #     if tgt in fname.keys(): tmp_configs[tgt] = fname[tgt]
+        except: 
+            logger.warn(f"Dev has defined pyconject configs for module {module}. "
+                "However, pyconject cannot resolve them. "
+                "Therefore, pyconject is using pyconject defaults.")
+    else:
+        logger.debug(f"Dev does not define pyconject configs for module {module}."
+            "Therefore, pyconject is using pyconject defaults.")
+    return tmp_configs, dev_defined
 
-    def _resolve_user_configs(self, force=False):
-        if self.resolve_user_configs:
-            if force:
-                logger.warn(
-                    "User configs are being resolved after pyconject has already resolved user configs."
-                )
-            else:
-                return
+def _get_dev_config_paths(func:Callable):
+    module = inspect.getmodule(func)
+    module_name = module.__name__
+    module_parts = module_name.split(".")
+    module_parts_len = len(module_parts)
+    module_filepath = Path(module.__file__)
 
-        user_configs_filepaths = {
-            k: f"./{k}-configs.yml" for k in ["dev", "stg", "prd"]
-        }
-        user_configs_filepaths[""] = f"./configs.yml"
-        if self.override_by_filename:
-            user_configs_filepaths[self.target] = self.filename
-
+    # Add module-specific config
+    _config, _dev_defined = _format_dev_defined_configs(module, default=f"{module_parts[-1]}-configs")
+    _config_path = ConfigPath(_config, module_name, _dev_defined)
+    config_paths = [_config_path]
+    # Traverse up the module hierarchy
+    for c, part in enumerate(list(module_filepath.parents)[:module_parts_len-1]):
         try:
-            eff_user_configs_filepath = user_configs_filepaths[self.target]
-            with open(eff_user_configs_filepath, "rt") as f:
-                self.user_configs = yaml.safe_load(f)
-            self.resolve_user_configs = True
-        except FileNotFoundError as e:
-            if self.override_by_filename:
-                logger.error(
-                    f"Unable to find {eff_user_configs_filepath}. Please provide the configs file."
-                )
-                raise FileNotFoundError(e)
-            self.user_configs = {}
+            m_name = ".".join(module_parts[:-1-c])
+            m = import_module(m_name)
+            _config, _dev_defined = _format_dev_defined_configs(m)
+            _config_path = ConfigPath(_config, m_name, _dev_defined)
+        except: 
+            logger.debut(f"pyconject cannot resolve configs for module at {part}."
+                f"Therefore, pyconject is using pyconject defaults.")
+            _config, _dev_defined = _default_dev_defined_configs(part), []
+            _config_path = ConfigPath(_config, m_name, _dev_defined)
 
-    def get_configs(self, func, force=False):
-        if not self.resolve_called:
-            self.resolve()
-        module_config = self._create_or_get_module_config(func)
-        if force or not module_config[_PYCONJECT][_PYCONJECT_INIT]:
-            self._resolve_module_configs(module_config)
+        config_paths.append(_config_path)
+        
+    return config_paths
 
-        self._resolve_user_configs()
+def _resolve_tree(func, configs: List[str]):
+    module_parts = func.__module__.split(".")
+    configs_to_parent = {}
 
-        self.configs = _merge_configs(self.user_configs, self.configs)
-        module_config = self._create_or_get_module_config(func)
-        return module_config.get(func.__name__, {})
+    for config_path in configs:
+        parts = config_path.split("/")
+        current_level = {}
+        configs_to_parent[config_path] = current_level
+        for module_part, part in zip(module_parts, parts):
+            current_level[module_part] = {}
+            current_level = current_level[module_part]
+        current_level[func.__name__] = parts[-1]
 
-
-def get_provided_and_filename(filename):
-    provided = True
-    if filename is None:
-        provided = False
-        filename = "configs.yml"
-    return provided, filename
-
-
-def get_module_config_path(func, target=None):
-    module_file_path = Path(inspect.getfile(func))
-    package_dir = module_file_path.parent
-    postfix = "-configs.yml"
-    if target is not None:
-        postfix = f"-{target}{postfix}"
-    filename = module_file_path.stem + postfix
-    return package_dir.joinpath(filename)
-
-
-def get_local_config(filepath):
-    with open(filepath, "rt") as f:
-        config = yaml.safe_load(f)
-    return config
-
-
-def init_module_configs(whatever):
-    pass
+    return configs_to_parent

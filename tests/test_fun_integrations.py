@@ -25,14 +25,14 @@ class TestFunIntegrations(unittest.TestCase):
             "builtins.open",
             unittest.mock.mock_open(
                 read_data="""
-                my_package:
-                    my_decorated_module: 
+                pcj_b:
+                    pcj_aa: 
                         my_function: 
                             param1: 100
                 """
             ),
         ):
-            from my_package.my_decorated_module import my_function
+            from pcj_b.pcj_aa import my_function
 
             param1, param2 = my_function()
             self.assertEqual(param1, 100)
@@ -41,7 +41,7 @@ class TestFunIntegrations(unittest.TestCase):
     def test_by_decorator_no_configs(self):
         # when no configs.yml present and user specifies nothing,
         # it shouldn't throw an Exception
-        from my_package.my_decorated_module import my_function
+        from pcj_b.pcj_aa import my_function
 
         param1, param2 = my_function(200)
         self.assertEqual(param1, 200)
@@ -51,7 +51,7 @@ class TestFunIntegrations(unittest.TestCase):
         # when no configs.yml present and user specifies it,
         # it should throw an Exception
         with self.assertRaises(FileNotFoundError):
-            from my_package.my_decorated_module import my_function
+            from pcj_b.pcj_aa import my_function
 
             resolve(filename="./configs.yml")
             my_function(200)
@@ -59,7 +59,7 @@ class TestFunIntegrations(unittest.TestCase):
     def test_by_decorator_with_dev_configs(self):
         # when the decorator is used, the developer's configs.yml
         # should be used for function calls
-        from my_package.my_decorated_module import (
+        from pcj_b.pcj_aa import (
             my_function_with_no_default_value as my_func,
         )
 
@@ -76,8 +76,8 @@ class TestFunIntegrations(unittest.TestCase):
         ) as cfg:
             yaml.dump(
                 {
-                    "my_package": {
-                        "my_decorated_module": {
+                    "pcj_b": {
+                        "pcj_aa": {
                             "my_function_with_no_default_value": {
                                 "param1": 100,
                                 "param2": 200,
@@ -88,7 +88,7 @@ class TestFunIntegrations(unittest.TestCase):
                 cfg,
             )
             to_delete = cfg.name
-        from my_package.my_decorated_module import (
+        from pcj_b.pcj_aa import (
             my_function_with_no_default_value as my_func,
         )
 
@@ -104,14 +104,14 @@ class TestFunIntegrations(unittest.TestCase):
             "builtins.open",
             unittest.mock.mock_open(
                 read_data="""
-                my_package:
-                    my_module: 
+                pcj_b:
+                    pcj_bb: 
                         my_function: 
                             param1: 100
                 """
             ),
         ):
-            from my_package.my_module import my_function
+            from pcj_b.pcj_bb import my_function
 
             my_function = pyconject(
                 my_function
