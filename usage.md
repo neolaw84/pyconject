@@ -50,7 +50,7 @@ from pyconject import pyconject
 dev_func = pyconject.func(dev_func)
 
 with pyconject.cntx():
-    dev_func(a=a, b=b, c=c, d=d)
+    dev_func() # nothing here
 ```
 
 Notice, there needs just 3 lines of code to let `pyconject` inject the configs defined in the current working directory:

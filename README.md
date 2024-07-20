@@ -1,6 +1,10 @@
 # pyconject
 
-`pyconject` is a (highly) opinionated python library inspired by Spring Framework (and Spring Boot Framework).
+`pyconject` is a (highly) opinionated PYthon CONfig inJECTor library inspired by Spring Framework (and Spring Boot Framework).
+
+> **How to pronounce `pyconject`**
+> 
+> `pyconject` is pronounced PY-CON-JECT, a word play for Burmese "ပိုက်ကွန်ချက်" = "the art of throwing net". It represents how it can be used to capture all types of configs and inject them into all types of packages.
 
 # Usage
 
@@ -47,7 +51,7 @@ from pyconject import pyconject
 dev_func = pyconject.func(dev_func)
 
 with pyconject.cntx():
-    dev_func(a=a, b=b, c=c, d=d)
+    dev_func() # nothing here
 ```
 
 ## Developing with `pyconject`
