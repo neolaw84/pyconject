@@ -6,83 +6,123 @@
 
 For detailed usage, refer to [usage.md](usage.md).
 
-## Configs precedence 
+## TL;DR
 
-`A > B` means A overrides B.
-
-```
-command line argument > os environment variable
-os environment variable > user provided global .yml
-user provided global .yml > user provided ./configs.yml
-user provided ./configs.yml > developer provided -configs.yml for each module
-developer provided -configs.yml for each module > developer provided default value in function definitions
-```
-
-As of 2025-06-29, we have:
-* user provided global ./configs.yml
-* developer provided -configs.yml for each module 
-
-## Developing your functions to work with `pyconject`
-
-If you are developing the function `my_function` to inject configurations,
+Instead of this: 
 
 ```python
-# in my_package/my_module.py
-# this is a library that uses pyconject
+# in usr_p/usr_sp/usr_m.py
+from dev_p.dev_sp.dev_m import dev_func
 
-@pyconject
-def my_function(param1=1, param2="blar"):
-    # do something with param1 and param2
-    pass 
+# initialize values of a, b, c and d.
+# this part is often the ugly mess
+# because it involves reading yaml 
+# or other tree-like files and 
+# assigning values
+
+dev_func(a=a, b=b, c=c, d=d)
 ```
 
-Then, the user of your function should have override for `param1` as
+With `pyconject`, we can do this:
 
 ```yaml
-# in configs.yml
-# this is the user code of the my_package library 
-
-my_package:
-  my_module: 
-    my_function: 
-      param1=100
+# in ./configs.yml
+dev_p:
+  dev_sp:
+    dev_m:
+      dev_func:
+        a: 1
+        b: 2
+        c: 3
+        d: 4
 ```
 
-Using your function should require no parameters.
+```python
+# in usr_p/usr_sp/usr_m.py
+from dev_p.dev_sp.dev_m import dev_func
+
+# initialize values of a, b, c and d.
+from pyconject import pyconject
+
+dev_func = pyconject.func(dev_func)
+
+with pyconject.cntx():
+    dev_func(a=a, b=b, c=c, d=d)
+```
+
+## Developing with `pyconject`
+
+Instead of this:
 
 ```python
-# in some main.py 
-# this is in the same directory of configs.yml
-from my_package.my_module import my_function 
+# in dev_p/dev_sp/dev_m.py
+import os
 
-my_function() # this should call my_function with param1 = 100 and param2 = "blar"
+env = os.environ["environment"]
+
+def dev_func(a=None, b=None, c=None, d=None):
+  if env == "dev":
+    if a is None: a = "dev-a"
+    if b is None: b = "dev-b"
+    # you know the rest
+  elif env == "stg":
+    if a is None: a = "stg-a"
+    if b is None: b = "stg-b"
+    # you know the rest
+  elif env == "prd":
+    if a is None: a = "prd-a"
+    if b is None: b = "prd-b"
+    # you know the rest
+  # ... 
+  # your application logic
+  return results
+```
+
+With `pyconject`, you can do this:
+
+```yaml
+# in dev_p/dev_sp/pyconject-dev_m-dev.py
+dev_func:
+  a : "dev-a"
+  b : "dev_b"
+  ...
+```
+
+```python
+# in dev_p/dev_sp/dev_m.py
+from pyconject import pyconject
+
+@pyconject.func
+def dev_func(a, b, c, d):
+  # your application logic
+  return results
 ```
 
 # To dos
 
 * Developer integration
-  * ~~Functions~~ done
-  * Classes
+  * ~~Functions~~ developing tests
+  * Singletons/Classes
   * Modules
   * Packages
   
 * User integration
-  * Functions
-  * Classes
+  * ~~Functions~~ done
+  * Singletons/Classes
   * Modules
   * Packages
-  * Global 
+  * Auto-detect when cntx open
 
 * Generate configs
-  * ~~Functions~~ done
+  * Functions
 
 * Type of configs
-  * **yaml -- priority**
-  * environment/target selection
+  * ~~**yaml -- priority**~~ done
+  * ~~environment/target selection~~ done
   * .env
   * overrides
     * environment variables
     * commandline arguments
 
 * Documentations
-  * Usage
+  * ~~Usage~~ done
