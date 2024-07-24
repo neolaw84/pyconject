@@ -67,7 +67,7 @@ class CntxStack:
         configs = load_and_merge_configs(config_path, configs)
         
         if target is not None: 
-            tgt_config_path = config_path.parent / f"{config_path.stem}-{target}.{config_path.suffix}"
+            tgt_config_path = config_path.parent / f"{config_path.stem}-{target}{config_path.suffix}"
             configs = load_and_merge_configs(tgt_config_path, configs)
         
         self.config_stack.push(configs)

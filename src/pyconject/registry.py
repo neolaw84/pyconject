@@ -98,7 +98,7 @@ class Module(RegItem):
             return init_default_dev_configs(configs_parent, cfg_path.stem, cfg_path.suffix)
         
         base_file = "-".join(["pyconject", self.cname[1]])    
-        _temp_dict = init_default_dev_configs(base_file)
+        _temp_dict = init_default_dev_configs(configs_parent, base_file)
         
         if isinstance(dev_configs, dict):
             for k, v in dev_configs.items():
@@ -125,7 +125,7 @@ class Package(RegItem):
             return init_default_dev_configs(configs_parent, cfg_path.stem, cfg_path.suffix)
         
         base_file = "pyconject"    
-        _temp_dict = init_default_dev_configs(base_file)
+        _temp_dict = init_default_dev_configs(configs_parent, base_file)
         
         if isinstance(dev_configs, dict):
             for k, v in dev_configs.items():
@@ -171,15 +171,17 @@ def _register_func(f, cntx_stack):
         bound_args = sig.bind_partial(*args, **kwargs)
         
         # Iterate over the parameters in the function signature.
-        for param_name, param in sig.parameters.items():
-            # If a parameter is missing from the bound arguments
-            # and present in the configs in the dictionary at top 
-            # of cntx_stack, use the value from the dictionary.
-            configs = cntx_stack.get_configs()
-            reg_item = _create_reg_item(item=f)
-            kw_args = get_from_prefixed_tree(prefix=reg_item.prefix, tree=configs)
-            if param_name not in bound_args.arguments and param_name in kw_args:
-                kwargs[param_name] = kw_args[param_name]
+        reg_item = _create_reg_item(item=f)
+        configs = cntx_stack.get_configs()
+        kw_args = get_from_prefixed_tree(prefix=reg_item.prefix, tree=configs)
+        if kw_args:
+            for param_name, param in sig.parameters.items():
+                # If a parameter is missing from the bound arguments
+                # and present in the configs in the dictionary at top 
+                # of cntx_stack, use the value from the dictionary.
+                
+                if param_name not in bound_args.arguments and param_name in kw_args:
+                    kwargs[param_name] = kw_args[param_name]
         value = f(*args, **kwargs)
         return value
     return wrapper_func

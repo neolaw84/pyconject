@@ -10,40 +10,10 @@ from pyconject import pyconject
 from tests.unittest_utils import remove_files_or_directories, _unique_str, get_dynamic_mock_open
 from dev_p.dev_sp.dev_m import dev_func
 
-RELATIVE_PATH_TO = "./relative/path/to"
-
 class ClientUsageTest(TestCase):
 
     def setUp(self):
-        self.user_cwd = tempfile.TemporaryDirectory(dir="./")
-        self.original_cwd = os.getcwd()
-        os.chdir(self.user_cwd.name)
-        super().setUp()
-
-    def tearDown(self):
-        remove_files_or_directories([
-            "./configs.yml", 
-            "./configs-dev.yml",
-            "./configs-stg.yml", 
-            "./configs-prd.yml",
-            f"{RELATIVE_PATH_TO}/cfg.yml",
-            f"{RELATIVE_PATH_TO}/cfg-dev.yml",
-            f"{RELATIVE_PATH_TO}/cfg-stg.yml",
-            f"{RELATIVE_PATH_TO}/cfg-prd.yml",
-            self.user_cwd
-        ])
-        os.chdir(self.original_cwd)
-        super().tearDown()
-
-    def test_vanilla(self):
-        with self.assertRaises(TypeError):
-            dev_func()
-
-        a, b, c, d = dev_func(1, 2, 3)
-        assert (a, b, c, d) == (1, 2, 3, "dev-default-in-func-definion")
-
-    def test_cntx_default(self):
-        configs = yaml.dump({
+        self.configs = yaml.dump({
             "dev_p": {
                 "dev_sp": {
                     "dev_m": {
@@ -55,7 +25,7 @@ class ClientUsageTest(TestCase):
                 }
             }
         })
-        configs_dev = yaml.dump({
+        self.configs_dev = yaml.dump({
             "dev_p": {
                 "dev_sp": {
                     "dev_m": {
@@ -66,13 +36,51 @@ class ClientUsageTest(TestCase):
                 }
             }
         })
-        
+
+    def test_vanilla(self):
+        with self.assertRaises(TypeError):
+            dev_func()
+
+        a, b, c, d = dev_func(1, 2, 3)
+        assert (a, b, c, d) == (1, 2, 3, "dev-default-in-func-definion")
+
+    def test_cntx_default(self):
         with patch("builtins.open", get_dynamic_mock_open({
-            (Path("./configs.yml"), "rt") : configs,
-            (Path("./configs-dev.yml"), "rt") : configs_dev
-        })) as mock_file:
-            global dev_func
-            dev_func = pyconject.func(dev_func)
-            with pyconject.cntx({}):
+            (Path("./configs.yml"), "rt") : self.configs,
+            (Path("./configs-dev.yml"), "rt") : self.configs_dev
+        })):
+            pyconject.init(globals())
+            with pyconject.cntx():
                 a, b, c, d = dev_func(1, 2)
                 assert (a, b, c, d) == (1, 2, "clt-defined-in-configs-c", "dev-default-in-func-definion")
+        
+    def test_cntx_target_dev(self):
+        with patch("builtins.open", get_dynamic_mock_open({
+            (Path("./configs.yml"), "rt") : self.configs,
+            (Path("./configs-dev.yml"), "rt") : self.configs_dev
+        })):
+            pyconject.init(globals())
+            with pyconject.cntx(target="dev"):
+                a, b, c, d = dev_func(1, 2)
+                assert (a, b, c, d) == (1, 2, "clt-defined-in-configs-dev-c", "dev-default-in-func-definion")
+
+    def test_cntx_custom_cfg_files(self):
+        with patch("builtins.open", get_dynamic_mock_open({
+            (Path("./cfgs.yml"), "rt") : self.configs,
+            (Path("./cfgs-dev.yml"), "rt") : self.configs_dev
+        })):
+            pyconject.init(globals())
+            with pyconject.cntx(config_path="cfgs.yml"):
+                a, b, c, d = dev_func(1, 2)
+                assert (a, b, c, d) == (1, 2, "clt-defined-in-configs-c", "dev-default-in-func-definion")
+
+    def test_cntx_custom_cfg_files_target_dev(self):
+        with patch("builtins.open", get_dynamic_mock_open({
+            (Path("./cfgs.yml"), "rt") : self.configs,
+            (Path("./cfgs-dev.yml"), "rt") : self.configs_dev
+        })):
+            pyconject.init(globals())
+            with pyconject.cntx(config_path="cfgs.yml", target="dev"):
+                a, b, c, d = dev_func(1, 2)
+                assert (a, b, c, d) == (1, 2, "clt-defined-in-configs-dev-c", "dev-default-in-func-definion")
+            

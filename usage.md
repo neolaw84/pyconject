@@ -5,9 +5,9 @@
 * client-users: the clients of the python libraries and 
 * dev-users: the developers of these python libraries.
 
-## Client-usage
+## 1. Client usage
 
-> Beautiful is better than ugly. [PEP-20](https://peps.python.org/pep-0020/)
+> Beautiful is better than ugly. [[PEP-20]](https://peps.python.org/pep-0020/)
 
 Consider the following python script that is using `dev_func` defined in `dev_p.dev_sp.dev_m`.
 
@@ -15,16 +15,27 @@ Consider the following python script that is using `dev_func` defined in `dev_p.
 # in usr_p/usr_sp/usr_m.py
 from dev_p.dev_sp.dev_m import dev_func
 
-# initialize values of a, b, c and d.
+# initialize values_a, value_b, 
+# value_c and value_d.
 # this part is often the ugly mess
 # because it involves reading yaml 
 # or other tree-like files and 
 # assigning values
+import yaml
+with open("./configs.yml", "rt") as f:
+  configs = yaml.safe_load(f)
+  dev_func_parameters = configs["dev_p"]["dev_sp"]["dev_m"]["dev_func"]
+  value_a = dev_func_parameters["a"]
+  value_b = dev_func_parameters["b"]
+  value_c = dev_func_parameters["c"]
+  value_d = dev_func_parameters["d"]
 
-dev_func(a=a, b=b, c=c, d=d)
+dev_func(a=value_a, b=value_b, c=value_c, d=value_d)
 ```
 
 Imagine this script needs to initialize a lot of variables such as `a`, `b`, `c` and `d` for the likes of `dev_func`. This will overwhelm the client users and makes the script code ***ugly***.
+
+### 1.1. Default usage
 
 `pyconject` allows a client user to define a yaml file to inject the variable values as follow: 
 
@@ -44,24 +55,24 @@ dev_p:
 # in usr_p/usr_sp/usr_m.py
 from dev_p.dev_sp.dev_m import dev_func
 
-# initialize values of a, b, c and d.
+# pyconject initializes values of a, b, c and d.
 from pyconject import pyconject
 
-dev_func = pyconject.func(dev_func)
+pyconject.init(globals())
 
 with pyconject.cntx():
-    dev_func() # nothing here
+    dev_func() 
 ```
 
 Notice, there needs just 3 lines of code to let `pyconject` inject the configs defined in the current working directory:
 
 1. importing pyconject: `from pyconject import pyconject`
-2. letting `pyconject` knows that it needs to manage `dev_func`: `dev_func = pyconject.func(dev_func)`
+2. letting `pyconject` knows that it needs to manage `globals()` dictionary: `pyconject.init(globals())`
 3. running `dev_func` in the `pyconject` context: `with pyconject.cntx():`
 
 In this specific example, `pyconject` will inject a=1, b=2, c=3 and d=4 into the running script.
 
-**`target` smart features**
+### 1.2. `target` smart features
 
 `pyconject` is aware of the fact that many user scripts need to use different configurations for different environment. By default, `pyconject` supports 3 `target`s:
 
@@ -88,7 +99,7 @@ from dev_p.dev_sp.dev_m import dev_func
 # initialize values of a, b, c and d.
 from pyconject import pyconject
 
-dev_func = pyconject.func(dev_func)
+pyconject.init(globals())
 
 with pyconject.cntx(target="dev"):
     dev_func(a=a, b=b, c=c, d=d)
@@ -98,7 +109,7 @@ In this way, `pyconject` will inject a=1 and b=2 as defined in `configs.yml` and
 
 > Notice that `pyconject` overrides values from `configs.yml` with values from `configs-<target>.yml` if a `target` is specified. 
 
-**Custom config file names**
+### 1.3. Custom config file names
 
 `pyconject` also allows client-users to name config files differently and save in arbitrary path. If the client-user creates the following two config files:
 
@@ -131,7 +142,7 @@ from dev_p.dev_sp.dev_m import dev_func
 # initialize values of a, b, c and d.
 from pyconject import pyconject
 
-dev_func = pyconject.func(dev_func)
+pyconject.init(globals())
 
 with pyconject.cntx(
         config_path="/path/to/user/defined/configs/cfg.yml", 
@@ -144,15 +155,17 @@ with pyconject.cntx(
 
 > Notice that `cfg.yml` and `cfg-dev.yml` still needs to be in the same directory with each other.
 
-## Dev-usage
+## 2. Dev usage
 
-> Explicit is better than implicit. [PEP-20](https://peps.python.org/pep-0020/)
+> Explicit is better than implicit. [[PEP-20]](https://peps.python.org/pep-0020/)
 
-Even though users can register any function (and modules) into `pyconject` by calling `pyconject.func`, it will be better if `pyconject` allows developer of python libraries to ***explictly*** pre-register their functions (and modules) for the user scripts. 
+Even though users can initialize `pyconject` by calling `pyconject.init` to have parameters injected into any function, it will be better if `pyconject` allows developer of python libraries to ***explictly*** pre-initialize/pre-register their functions (and modules) for the user scripts. 
 
 In addition, they can define default parameter values and `target`-specific parameter values. 
 
-> Notice that the user can overwrite these defaults either using `pyconject` or directly in their code. This is not `pyconject` concept as, from the very beginning, users of libraries can pass any value to any parameter.
+> Notice that the user can overwrite these defaults either using `pyconject` or directly in their code. 
+> 
+> This is not a new concept `pyconject` introduces as, from the very beginning, users of libraries can pass any value to any parameter.
 
 Consider the following directory tree:
 
@@ -165,7 +178,7 @@ dev_p
         __init__.py
 ```
 
-**Registering a function**
+### 2.1. Registering a module
 
 ```python
 # in dev_p/dev_sp/dev_m.py
@@ -174,25 +187,21 @@ def dev_func(a, b, c, d):
     return a, b, c, d
 ```
 
-To register `dev_func` in `pyconject`, the developer needs to explicitly register it as follow:
+To register the `dev_p` module in `pyconject`, the developer needs to explicitly register it as follow:
 
 ```python
-# in dev_p/dev_sp/dev_m.py
-
+# in dev_p/__init__.py
 from pyconject import pyconject
+pyconject.mdle(__name__)
+```
 
-@pyconject.func
+```python
+# in dev_p/dev_sp/dev_m.py
 def dev_func(a, b, c, d):
     return a, b, c, d
 ```
 
-By default, `pyconject` will try to find the configurations in the following files:
-
-* `dev_p/dev_sp/pyconject-dev_m.yml`
-* `dev_p/dev_sp/pyconject.yml`
-* `dev_p/pyconject.yml`
-
-If the `dev_p/pyconject.yml` has the following contents:
+By default, `pyconject` will try to find the configurations in this file: `dev_p/pyconject.yml`
 
 ```yaml
 # in dev_p/pyconject.yml
@@ -211,6 +220,8 @@ Then, `pyconject` will inject the configs for `dev_func` as follow:
 from dev_p.dev_sp.dev_m import dev_func
 
 from pyconject import pyconject
+
+pyconject.init(globals())
 
 with pyconject.cntx(): # notice there is nothing here
     aa, bb, cc, dd = dev_func()

@@ -17,7 +17,7 @@ def remove_file_or_directory(path: Path, force: bool = False):
 
 def remove_files_or_directories(paths: List[Path], force: bool = False):
     for path in paths: 
-        remove_file_or_directory(path, force)
+        remove_file_or_directory(Path(path), force)
 
 def _unique_str_gen(prefix="my_uniq_str"):
     for i in range(1000000):

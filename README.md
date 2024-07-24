@@ -130,3 +130,7 @@ def dev_func(a, b, c, d):
 
 * Documentations
   * ~~Usage~~ done
+
+* CI/CD
+  * github actions to unittest at push and pull-request
+  * github actions to publish to pypi after merge
