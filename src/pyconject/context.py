@@ -4,11 +4,11 @@ import inspect
 from .registry import Registry
 from .utils import Stack, get_target_frame, load_and_merge_configs, get_imported_modules_and_funcs
 
-def _get_caller():
-    """Retrieves the globals() dictionary of the caller's frame."""
+# def _get_caller():
+#     """Retrieves the globals() dictionary of the caller's frame."""
 
-    caller_frame = inspect.currentframe().f_back.f_back
-    return caller_frame
+#     caller_frame = inspect.currentframe().f_back.f_back
+#     return caller_frame
 
 class Cntx:
     def __init__(self, target=None, config_path=None, cntx_stack=None):
@@ -75,7 +75,7 @@ class CntxStack:
         return configs
     
     def get_configs(self):
-        return self.config_stack.peek()
+        return self.config_stack.peek() if len(self.config_stack) > 1 else {}
     
     def unstack(self):
         self.config_stack.pop()

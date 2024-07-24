@@ -230,7 +230,7 @@ with pyconject.cntx(): # notice there is nothing here
     print (aa, bb, cc, dd) 
 ```
 
-**Tree smart features**
+### 2.2. Tree smart features
 
 `pyconject` expects different kinds of `yaml` trees for client-users and dev-users. More specifically, `pyconject` understands the configs defined in `dev_p/pyconject.yml` is for package `dev_p` (package level configs). That's why `dev_p/pyconject.yml` tree does not need to specify `dev_p` like it would require for client-user's `configs.yml` file.
 
@@ -261,7 +261,7 @@ Finally, `pyconject` also understands the configs defined in `dev_p/dev_sp/pycon
 a: 100001
 ```
 
-**`target` smart features**
+### 2.3. `target` smart features
 
 Of course, `pyconject` also allows dev-users to specify `target`-specific configs.
 
@@ -277,7 +277,7 @@ To define `target`-specific configs, just append `-<target>` in the stem of the 
 
 > `pyconject` recommends to set `dev`, `stg` and `prd`. 
 
-**Custom config file names**
+### 2.4. Custom config file names
 
 Like client-users, dev-users can also define custom file names for `pyconject` configs.
 
@@ -299,7 +299,7 @@ def dev_func_target(a, b, c, d):
 
 > Notice that `pyconject` still infers the functions (and modules) the configs is supposed to be injected based on the directory structure. Therefore, it is imperative to give the path relative to the respective module file. 
 
-**Resolving collisions**
+## 3. Resolving collisions
 
 If multiple config files specify the same values, `pyconject` resolves them as follow (higher entry overrides lower entries):
 
@@ -316,7 +316,7 @@ If multiple config files specify the same values, `pyconject` resolves them as f
 * specified in `target`-specific package level configs defined by dev-user such as `dev_p/pyconject-dev.yml`
 * specified in package level configs defined by dev-user such as `dev_p/pyconject.yml`
 
-Example 1:
+### 3.1. Example 1:
 
 When there is no client-user configs defined,
 
@@ -334,7 +334,7 @@ with pyconject.cntx(): # notice there is nothing here
     print (aa, bb, cc, dd) 
 ```
 
-Example 2: 
+### 3.2. Example 2: 
 
 When there are client-user configs defined as follow:
 
