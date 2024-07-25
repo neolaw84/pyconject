@@ -16,42 +16,38 @@ Instead of this:
 
 ```python
 # in usr_p/usr_sp/usr_m.py
-from dev_p.dev_sp.dev_m import dev_func
+from black_p.black_sp.black_m import black_func
 
-# initialize values of a, b, c and d.
+# initialize values_a, value_b, 
+# value_c and value_d.
 # this part is often the ugly mess
 # because it involves reading yaml 
 # or other tree-like files and 
 # assigning values
+import yaml
+with open("./configs.yml", "rt") as f:
+  configs = yaml.safe_load(f)
+  black_func_parameters = configs["black_p"]["black_sp"]["black_m"]["black_func"]
+  value_a = black_func_parameters["a"]
+  # more ugly things here; you get the gist ...
 
-dev_func(a=a, b=b, c=c, d=d)
+black_func(a=value_a, b=value_b, c=value_c, d=value_d)
 ```
 
 With `pyconject`, we can do this:
 
-```yaml
-# in ./configs.yml
-dev_p:
-  dev_sp:
-    dev_m:
-      dev_func:
-        a: 1
-        b: 2
-        c: 3
-        d: 4
-```
 
 ```python
 # in usr_p/usr_sp/usr_m.py
-from dev_p.dev_sp.dev_m import dev_func
+from black_p.black_sp.black_m import black_func
 
-# initialize values of a, b, c and d.
+# pyconject initializes values of a, b, c and d.
 from pyconject import pyconject
 
-dev_func = pyconject.func(dev_func)
+pyconject.init(globals())
 
 with pyconject.cntx():
-    dev_func() # nothing here
+    black_func() 
 ```
 
 ## Developing with `pyconject`
@@ -105,20 +101,21 @@ def dev_func(a, b, c, d):
 # To dos
 
 * Developer integration
-  * ~~Functions~~ developing tests
-  * Singletons/Classes
-  * Modules
-  * Packages
-  
-* User integration
   * ~~Functions~~ done
   * Singletons/Classes
-  * Modules
-  * Packages
-  * Auto-detect when cntx open
+  * ~~Modules~~ done
+  * ~~Packages~~ done
+  
+* Client integration
+  * ~~Functions~~ done
+  * Singletons/Classes
+  * ~~Modules~~
+  * ~~Packages~~
+  * ~~Auto-detect when cntx open~~ use `pyconject.init(globals())` instead
 
-* Generate configs
-  * Functions
+* Generate config files
+
+* Raw retrieval of resolved configs (to manipulate by user)
 
 * Type of configs
   * ~~**yaml -- priority**~~ done

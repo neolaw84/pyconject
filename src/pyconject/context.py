@@ -51,7 +51,7 @@ class CntxStack:
         self.registry = Registry(self)
 
     def _resolve_dev_configs(self, target):
-        dev_configs = self.registry.load_dev_configs(force=False, target=target)
+        dev_configs = self.registry.load_dev_configs(force=True, target=target)
         self.config_stack.push(dev_configs)
         return dev_configs
 
@@ -79,5 +79,6 @@ class CntxStack:
     
     def unstack(self):
         self.config_stack.pop()
+        if len(self.config_stack) == 1: self.config_stack.pop()
 
 _cntx_stack = CntxStack()

@@ -75,7 +75,7 @@ class Function(RegItem):
         
         if isinstance(dev_configs, dict):
             for k, v in dev_configs.items():
-                _temp_dict[k] = v
+                _temp_dict[k] = str(configs_parent / v)
 
         return _temp_dict # this also covers when self.configs is None
     
@@ -102,7 +102,7 @@ class Module(RegItem):
         
         if isinstance(dev_configs, dict):
             for k, v in dev_configs.items():
-                _temp_dict[k] = v
+                _temp_dict[k] = str(configs_parent / v)
 
         return _temp_dict # this also covers when self.configs is None
     
@@ -129,7 +129,7 @@ class Package(RegItem):
         
         if isinstance(dev_configs, dict):
             for k, v in dev_configs.items():
-                _temp_dict[k] = v
+                _temp_dict[k] = str(configs_parent / v)
 
         return _temp_dict # this also covers when dev_configs is None
     

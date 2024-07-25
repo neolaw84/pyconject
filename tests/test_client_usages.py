@@ -7,17 +7,18 @@ import yaml
 
 from pyconject import pyconject
 
-from tests.unittest_utils import remove_files_or_directories, _unique_str, get_dynamic_mock_open
-from dev_p.dev_sp.dev_m import dev_func
+from tests.unittest_utils import get_dynamic_mock_open, remove_file_or_directory
+from black_p.black_sp.black_m import black_func
+from dev_p.dev_sp.dev_m import dev_func_m
 
 class ClientUsageTest(TestCase):
 
     def setUp(self):
         self.configs = yaml.dump({
-            "dev_p": {
-                "dev_sp": {
-                    "dev_m": {
-                        "dev_func": {
+            "black_p": {
+                "black_sp": {
+                    "black_m": {
+                        "black_func": {
                             "b": "clt-defined-in-configs-b",
                             "c": "clt-defined-in-configs-c"
                         }
@@ -26,22 +27,38 @@ class ClientUsageTest(TestCase):
             }
         })
         self.configs_dev = yaml.dump({
-            "dev_p": {
-                "dev_sp": {
-                    "dev_m": {
-                        "dev_func": {
+            "black_p": {
+                "black_sp": {
+                    "black_m": {
+                        "black_func": {
                             "c": "clt-defined-in-configs-dev-c"
                         }
                     }
                 }
             }
         })
+        with open("tests/cfgs.yml", "wt") as f:
+            yaml.safe_dump({
+                "dev_p": {
+                    "dev_sp": {
+                        "dev_m": {
+                            "dev_func_m": {
+                                "a": "a1"
+                            }
+                        }
+                    }
+                }
+            }, f)
+
+    def tearDown(self) -> None:
+        remove_file_or_directory(Path("tests/cfgs.yml"))
+        return super().tearDown()
 
     def test_vanilla(self):
         with self.assertRaises(TypeError):
-            dev_func()
+            black_func()
 
-        a, b, c, d = dev_func(1, 2, 3)
+        a, b, c, d = black_func(1, 2, 3)
         assert (a, b, c, d) == (1, 2, 3, "dev-default-in-func-definion")
 
     def test_cntx_default(self):
@@ -51,7 +68,7 @@ class ClientUsageTest(TestCase):
         })):
             pyconject.init(globals())
             with pyconject.cntx():
-                a, b, c, d = dev_func(1, 2)
+                a, b, c, d = black_func(1, 2)
                 assert (a, b, c, d) == (1, 2, "clt-defined-in-configs-c", "dev-default-in-func-definion")
         
     def test_cntx_target_dev(self):
@@ -61,7 +78,7 @@ class ClientUsageTest(TestCase):
         })):
             pyconject.init(globals())
             with pyconject.cntx(target="dev"):
-                a, b, c, d = dev_func(1, 2)
+                a, b, c, d = black_func(1, 2)
                 assert (a, b, c, d) == (1, 2, "clt-defined-in-configs-dev-c", "dev-default-in-func-definion")
 
     def test_cntx_custom_cfg_files(self):
@@ -71,7 +88,7 @@ class ClientUsageTest(TestCase):
         })):
             pyconject.init(globals())
             with pyconject.cntx(config_path="cfgs.yml"):
-                a, b, c, d = dev_func(1, 2)
+                a, b, c, d = black_func(1, 2)
                 assert (a, b, c, d) == (1, 2, "clt-defined-in-configs-c", "dev-default-in-func-definion")
 
     def test_cntx_custom_cfg_files_target_dev(self):
@@ -81,6 +98,11 @@ class ClientUsageTest(TestCase):
         })):
             pyconject.init(globals())
             with pyconject.cntx(config_path="cfgs.yml", target="dev"):
-                a, b, c, d = dev_func(1, 2)
+                a, b, c, d = black_func(1, 2)
                 assert (a, b, c, d) == (1, 2, "clt-defined-in-configs-dev-c", "dev-default-in-func-definion")
             
+    def test_cntx_default_m_func(self):
+        pyconject.init(globals())
+        with pyconject.cntx(config_path="tests/cfgs.yml"):
+            a, b, c, d = dev_func_m()
+            assert (a, b, c, d) == ("a1", 20002, 3003, 404)

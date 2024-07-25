@@ -1,7 +1,20 @@
 dev_sp:
   dev_m: 
-    dev_func_2:
+    dev_func:
       a: 101
       b: 202
       c: 303
       d: 404
+    dev_func_sp:
+      a: 101
+      b: 202
+      c: 303
+      d: 404
+    dev_func_m:
+      a: 101
+      b: 202
+      c: 303
+      d: 404
+    dev_func_sp_custom:
+      c: "c"
+      d: "d"

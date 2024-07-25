@@ -9,11 +9,11 @@
 
 > Beautiful is better than ugly. [[PEP-20]](https://peps.python.org/pep-0020/)
 
-Consider the following python script that is using `dev_func` defined in `dev_p.dev_sp.dev_m`.
+Consider the following python script that is using a black box function `black_func` defined in `black_p.black_sp.black_m`.
 
 ```python
 # in usr_p/usr_sp/usr_m.py
-from dev_p.dev_sp.dev_m import dev_func
+from black_p.black_sp.black_m import black_func
 
 # initialize values_a, value_b, 
 # value_c and value_d.
@@ -24,36 +24,38 @@ from dev_p.dev_sp.dev_m import dev_func
 import yaml
 with open("./configs.yml", "rt") as f:
   configs = yaml.safe_load(f)
-  dev_func_parameters = configs["dev_p"]["dev_sp"]["dev_m"]["dev_func"]
-  value_a = dev_func_parameters["a"]
-  value_b = dev_func_parameters["b"]
-  value_c = dev_func_parameters["c"]
-  value_d = dev_func_parameters["d"]
+  black_func_parameters = configs["black_p"]["black_sp"]["black_m"]["black_func"]
+  value_a = black_func_parameters["a"]
+  value_b = black_func_parameters["b"]
+  value_c = black_func_parameters["c"]
+  value_d = black_func_parameters["d"]
 
-dev_func(a=value_a, b=value_b, c=value_c, d=value_d)
+black_func(a=value_a, b=value_b, c=value_c, d=value_d)
 ```
 
-Imagine this script needs to initialize a lot of variables such as `a`, `b`, `c` and `d` for the likes of `dev_func`. This will overwhelm the client users and makes the script code ***ugly***.
-
-### 1.1. Default usage
-
-`pyconject` allows a client user to define a yaml file to inject the variable values as follow: 
+We give the content of the `configs.yml` file as follow for completeness:
 
 ```yaml
 # in ./configs.yml
-dev_p:
-  dev_sp:
-    dev_m:
-      dev_func:
+black_p:
+  black_sp:
+    black_m:
+      black_func:
         a: 1
         b: 2
         c: 3
         d: 4
 ```
 
+Imagine this script needs to initialize a lot of variables such as `a`, `b`, `c` and `d` for the likes of `black_func`. This will overwhelm the client users and makes the script code ***ugly***.
+
+### 1.1. Default usage
+
+`pyconject` allows a client user to define a yaml file to inject the variable values as follow: 
+
 ```python
 # in usr_p/usr_sp/usr_m.py
-from dev_p.dev_sp.dev_m import dev_func
+from black_p.black_sp.black_m import black_func
 
 # pyconject initializes values of a, b, c and d.
 from pyconject import pyconject
@@ -61,14 +63,14 @@ from pyconject import pyconject
 pyconject.init(globals())
 
 with pyconject.cntx():
-    dev_func() 
+    black_func() 
 ```
 
 Notice, there needs just 3 lines of code to let `pyconject` inject the configs defined in the current working directory:
 
 1. importing pyconject: `from pyconject import pyconject`
 2. letting `pyconject` knows that it needs to manage `globals()` dictionary: `pyconject.init(globals())`
-3. running `dev_func` in the `pyconject` context: `with pyconject.cntx():`
+3. running `black_func` in the `pyconject` context: `with pyconject.cntx():`
 
 In this specific example, `pyconject` will inject a=1, b=2, c=3 and d=4 into the running script.
 
@@ -84,17 +86,17 @@ In the above running example, user simply needs to append `-<target>` in the ste
 
 ```yaml
 # in ./configs-dev.yml
-dev_p:
-  dev_sp:
-    dev_m:
-      dev_func:
+black_p:
+  black_sp:
+    black_m:
+      black_func:
         c: 30
         d: 40
 ```
 
 ```python
 # in usr_p/usr_sp/usr_m.py
-from dev_p.dev_sp.dev_m import dev_func
+from black_p.black_sp.black_m import black_func
 
 # initialize values of a, b, c and d.
 from pyconject import pyconject
@@ -102,7 +104,7 @@ from pyconject import pyconject
 pyconject.init(globals())
 
 with pyconject.cntx(target="dev"):
-    dev_func(a=a, b=b, c=c, d=d)
+    black_func(a=a, b=b, c=c, d=d)
 ```
 
 In this way, `pyconject` will inject a=1 and b=2 as defined in `configs.yml` and c=30 and d=40 as defined in `configs-dev.yml`.
@@ -115,10 +117,10 @@ In this way, `pyconject` will inject a=1 and b=2 as defined in `configs.yml` and
 
 ```yaml
 # in /path/to/user/defined/configs/cfg.yml
-dev_p:
-  dev_sp:
-    dev_m:
-      dev_func:
+black_p:
+  black_sp:
+    black_m:
+      black_func:
         a: 1
         b: 2
         c: 3
@@ -127,17 +129,17 @@ dev_p:
 
 ```yaml
 # in /path/to/user/defined/configs/cfg-dev.yml
-dev_p:
-  dev_sp:
-    dev_m:
-      dev_func:
+black_p:
+  black_sp:
+    black_m:
+      black_func:
         c: 30
         d: 40
 ```
 
 ```python
 # in usr_p/usr_sp/usr_m.py
-from dev_p.dev_sp.dev_m import dev_func
+from black_p.black_sp.black_m import black_func
 
 # initialize values of a, b, c and d.
 from pyconject import pyconject
@@ -148,7 +150,7 @@ with pyconject.cntx(
         config_path="/path/to/user/defined/configs/cfg.yml", 
         target="dev"
     ):
-    dev_func(a=a, b=b, c=c, d=d)
+    black_func(a=a, b=b, c=c, d=d)
 ```
 
 `pyconject` will inject configs in `cfg.yml` and `cfg-dev.yml` as a = 1, b = 2, c = 30 and d = 40. 
@@ -182,7 +184,6 @@ dev_p
 
 ```python
 # in dev_p/dev_sp/dev_m.py
-
 def dev_func(a, b, c, d):
     return a, b, c, d
 ```
@@ -193,12 +194,6 @@ To register the `dev_p` module in `pyconject`, the developer needs to explicitly
 # in dev_p/__init__.py
 from pyconject import pyconject
 pyconject.mdle(__name__)
-```
-
-```python
-# in dev_p/dev_sp/dev_m.py
-def dev_func(a, b, c, d):
-    return a, b, c, d
 ```
 
 By default, `pyconject` will try to find the configurations in this file: `dev_p/pyconject.yml`
@@ -274,8 +269,8 @@ To define `target`-specific configs, just append `-<target>` in the stem of the 
 * `dev_p/dev_sp/pyconject-dev_m-prd.yml`
 
 > The specific `target` names are in the contract between developer and client of the respective python library and, hence, out of scope for `pyconject`. 
-
-> `pyconject` recommends to set `dev`, `stg` and `prd`. 
+>
+> Nonetheless, `pyconject` recommends to set `dev`, `stg` and `prd`. 
 
 ### 2.4. Custom config file names
 

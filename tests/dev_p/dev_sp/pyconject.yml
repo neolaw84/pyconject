@@ -1,0 +1,10 @@
+# in dev_p/dev_sp/pyconject.yml
+dev_m: 
+  dev_func_sp:
+    a: 1001
+    b: 2002
+    c: 3003
+  dev_func_m:
+    a: 1001
+    b: 2002
+    c: 3003
