@@ -1,6 +1,6 @@
 import argparse
 from pathlib import Path
-
+from glob import glob
 
 def remove_file_or_directory(path: Path, force: bool = False):
     """
@@ -35,7 +35,8 @@ def main():
 
     for path_str in args.paths:
         path = Path(path_str)
-        remove_file_or_directory(path, force=args.force)
+        for p in glob(path):
+            remove_file_or_directory(p, force=args.force)
 
 
 if __name__ == "__main__":

@@ -10,7 +10,7 @@ install-dev-reqs:
 
 clean:
 	@pip uninstall -y pyconject
-	@python rm.py -r -f dist
+	@python rm.py -r -f dist 
 
 lint:
 	@python -m black .
@@ -30,4 +30,4 @@ test:
 	@pytest tests 
 
 install-and-test: clean build install
-	@pytest --override-ini=pythonpath="src" tests
+	@pytest --override-ini=pythonpath="tests" tests
