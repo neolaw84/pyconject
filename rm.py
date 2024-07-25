@@ -34,10 +34,15 @@ def main():
     args = parser.parse_args()
 
     for path_str in args.paths:
-        path = Path(path_str)
-        for p in glob(path):
-            remove_file_or_directory(p, force=args.force)
-
+        try:
+            # path = Path(path_str)
+            for p in glob(path_str):
+                remove_file_or_directory(Path(p), force=args.force)
+        except Exception as e:
+            print ("exception")
+            import traceback as tb
+            tb.print_stack()
+            tb.print_tb(e.__traceback__)
 
 if __name__ == "__main__":
     main()

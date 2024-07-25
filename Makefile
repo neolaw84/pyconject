@@ -24,7 +24,7 @@ install-reqs:
 install:
 	cp dist/*.tar.gz ./pyconject.tar.gz
 	python -m pip install ./pyconject.tar.gz
-	python rm.py ./pyconject.tar.gz
+	python rm.py -r -f ./pyconject.tar.gz
 
 test:
 	@pytest tests 

@@ -8,7 +8,7 @@ import yaml
 # import pyconject as root_pyconject
 from pyconject import pyconject
 
-from tests.unittest_utils import get_dynamic_mock_open
+from unittest_utils import get_dynamic_mock_open
 from dev_p.dev_sp.dev_m import dev_func, dev_func_sp, dev_func_m, dev_func_sp_custom, dev_func_sp_custom2
 
 class DevUsageTest(TestCase):

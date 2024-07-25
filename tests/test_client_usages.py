@@ -7,7 +7,7 @@ import yaml
 
 from pyconject import pyconject
 
-from tests.unittest_utils import get_dynamic_mock_open, remove_file_or_directory
+from unittest_utils import get_dynamic_mock_open, remove_file_or_directory
 from black_p.black_sp.black_m import black_func
 from dev_p.dev_sp.dev_m import dev_func_m
 
