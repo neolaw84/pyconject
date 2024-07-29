@@ -211,7 +211,7 @@ class Registry:
 
             if entry_inst.reg_item_type in [RegItemType.MODL, RegItemType.PKGE]:
                 # recursively register all sub-modules  
-                _subs = {sub_name: self._register(sub) for sub_name, sub in get_subs(entry_inst.m)}
+                _subs = {sub_name: self._register(sub) for sub_name, sub in get_subs(entry_inst.m).items()}
                 
                 for sn, sv in _subs.items():
                     vars(entry_inst.m)[sn] = sv
@@ -235,8 +235,7 @@ class Registry:
         configs = {}
         for reg_item in sorted_reg_items:
             dev_config_path = reg_item.get_dev_config_paths()
-            configs = load_and_merge_configs(dev_config_path[""], configs, reg_item.prefix)
-            
+            if target is None: target = ""
             if target is not None and target in dev_config_path:
                 configs = load_and_merge_configs(dev_config_path[target], configs, reg_item.prefix)
 

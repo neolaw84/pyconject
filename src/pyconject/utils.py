@@ -3,7 +3,7 @@ from typing import Dict
 import inspect
 import yaml 
 
-def merge_dictionaries(dict1, dict2):
+def merge_dictionaries(dict1, dict2) -> dict:
     merged = dict1.copy()
     for key, value in dict2.items():
         if key in merged and isinstance(merged[key], dict) and isinstance(value, dict):

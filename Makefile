@@ -31,3 +31,15 @@ test:
 
 install-and-test: clean build install
 	@pytest --override-ini=pythonpath="tests" tests
+
+show-bump:
+	bump-my-version show-bump
+
+bump-micro:
+	bump-my-version bump --allow-dirty micro
+
+bump-minor:
+	bump-my-version bump --allow-dirty minor 
+
+bump-major:
+	bump-my-version bump --allow-dirty major

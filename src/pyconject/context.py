@@ -2,7 +2,7 @@ from copy import deepcopy
 from pathlib import Path
 import inspect
 from .registry import Registry
-from .utils import Stack, get_target_frame, load_and_merge_configs, get_imported_modules_and_funcs
+from .utils import Stack, load_and_merge_configs, merge_dictionaries
 
 # def _get_caller():
 #     """Retrieves the globals() dictionary of the caller's frame."""
@@ -48,17 +48,22 @@ class CntxStack:
     
     def __init__(self):
         self.config_stack = Stack()
+        self.target_stack = Stack()
         self.registry = Registry(self)
 
-    def _resolve_dev_configs(self, target):
+    def _resolve_dev_configs(self, target=None):
         dev_configs = self.registry.load_dev_configs(force=True, target=target)
         self.config_stack.push(dev_configs)
+        self.target_stack.push(target)
         return dev_configs
 
     def stack(self, target=None, config_path=None):
         prev_configs = self.config_stack.peek()
         if prev_configs is None:
-            prev_configs = self._resolve_dev_configs(target)
+            prev_configs = self._resolve_dev_configs(target=None)
+        if target is not None:
+            prev_configs_target = self._resolve_dev_configs(target=target)
+            prev_configs = merge_dictionaries(prev_configs, prev_configs_target)
         # at this point, prev_configs is not None
         configs = deepcopy(prev_configs)
         if config_path is None: 
@@ -71,14 +76,22 @@ class CntxStack:
             configs = load_and_merge_configs(tgt_config_path, configs)
         
         self.config_stack.push(configs)
+        self.target_stack.push(target)
 
         return configs
     
     def get_configs(self):
-        return self.config_stack.peek() if len(self.config_stack) > 1 else {}
+        # load dev config if it is not there yet 
+        if len(self.config_stack) < 1: 
+            self.stack() 
+        return self.config_stack.peek() # if len(self.config_stack) > 1 else {}
     
     def unstack(self):
+        if self.target_stack.peek():
+            self.config_stack.pop()
+            self.target_stack.pop()
         self.config_stack.pop()
-        if len(self.config_stack) == 1: self.config_stack.pop()
+        self.target_stack.pop()
+        # if len(self.config_stack) == 1: self.config_stack.pop()
 
 _cntx_stack = CntxStack()
