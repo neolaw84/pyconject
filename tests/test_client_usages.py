@@ -6,6 +6,7 @@ from pathlib import Path
 import yaml
 
 from pyconject import pyconject
+from pyconject.context import CntxStack
 
 from unittest_utils import get_dynamic_mock_open, remove_file_or_directory
 from black_p.black_sp.black_m import black_func
@@ -49,6 +50,10 @@ class ClientUsageTest(TestCase):
                     }
                 }
             }, f)
+        while(len(pyconject._cntx_stack.config_stack) > 0):
+            pyconject._cntx_stack.config_stack.pop()
+        while(len(pyconject._cntx_stack.target_stack) > 0):
+            pyconject._cntx_stack.target_stack.pop()
 
     def tearDown(self) -> None:
         remove_file_or_directory(Path("tests/cfgs.yml"))

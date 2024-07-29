@@ -18,12 +18,9 @@ Instead of this:
 # in usr_p/usr_sp/usr_m.py
 from black_p.black_sp.black_m import black_func
 
-# initialize values_a, value_b, 
-# value_c and value_d.
-# this part is often the ugly mess
-# because it involves reading yaml 
-# or other tree-like files and 
-# assigning values
+# initialize values_a, value_b, value_c and value_d.
+# this part is often the ugly mess because it involves 
+# reading yaml or other tree-like files and assigning values
 import yaml
 with open("./configs.yml", "rt") as f:
   configs = yaml.safe_load(f)
