@@ -213,16 +213,11 @@ Then, `pyconject` will inject the configs for `dev_func` as follow:
 
 ```python
 from dev_p.dev_sp.dev_m import dev_func
+# notice client needs not be aware of pyconject here
+aa, bb, cc, dd = dev_func()
 
-from pyconject import pyconject
-
-pyconject.init(globals())
-
-with pyconject.cntx(): # notice there is nothing here
-    aa, bb, cc, dd = dev_func()
-
-    # this will print 101, 202, 303, 404
-    print (aa, bb, cc, dd) 
+# this will print 101, 202, 303, 404
+print (aa, bb, cc, dd) 
 ```
 
 ### 2.2. Tree smart features
@@ -301,14 +296,15 @@ If multiple config files specify the same values, `pyconject` resolves them as f
 * explicitly specifying in `python` code such as `dev_func(a=0.1, b=0.2, c=0.3, d=0.4)`
   * This is backward-compatibility feature.
 * specified in `target`-specific configs defined by client-user such as `configs-dev.yml`
-* specified in configs defined by client-user such as `configs.yml`
+
 * specified in `target`-specific function level configs defined by dev-user such as `dev_p/dev_sp/pyconject-dev_m-dev_func-dev.yml`
-* specified in function level configs defined by dev-user such as `dev_p/dev_sp/pyconject-dev_m-dev_func.yml`
 * specified in `target`-specific module level configs defined by dev-user such as `dev_p/dev_sp/pyconject-dev_m.yml`
-* specified in module level configs defined by dev-user such as `dev_p/dev_sp/pyconject-dev_m.yml`
 * specified in `target`-specific sub-package level configs defined by dev-user such as `dev_p/dev_sp/pyconject-dev.yml`
-* specified in sub-package level configs defined by dev-user such as `dev_p/dev_sp/pyconject.yml`
 * specified in `target`-specific package level configs defined by dev-user such as `dev_p/pyconject-dev.yml`
+* specified in configs defined by client-user such as `configs.yml`
+* specified in function level configs defined by dev-user such as `dev_p/dev_sp/pyconject-dev_m-dev_func.yml`
+* specified in module level configs defined by dev-user such as `dev_p/dev_sp/pyconject-dev_m.yml`
+* specified in sub-package level configs defined by dev-user such as `dev_p/dev_sp/pyconject.yml`
 * specified in package level configs defined by dev-user such as `dev_p/pyconject.yml`
 
 ### 3.1. Example 1:
@@ -318,15 +314,10 @@ When there is no client-user configs defined,
 ```python
 from dev_p.dev_sp.dev_m import dev_func
 
-from pyconject import pyconject
+aa, bb, cc, dd = dev_func()
 
-dev_func = pyconject.func(dev_func)
-
-with pyconject.cntx(): # notice there is nothing here
-    aa, bb, cc, dd = dev_func()
-
-    # this will print 100001, 20002, 3003, 404
-    print (aa, bb, cc, dd) 
+# this will print 100001, 20002, 3003, 404
+print (aa, bb, cc, dd) 
 ```
 
 ### 3.2. Example 2: 
