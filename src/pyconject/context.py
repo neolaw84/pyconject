@@ -89,7 +89,7 @@ class CntxStack:
                 / f"{config_path_.stem}-{target}{config_path_.suffix}"
             )
             if isinstance(config_path, dict):
-                tgt_config_path = config_path.get(target, tgt_config_path)
+                tgt_config_path = Path(config_path.get(target, str(tgt_config_path)))
             logger.debug(f"loading user defined {target} config from {tgt_config_path}")
             configs = load_and_merge_configs(tgt_config_path, configs)
 
