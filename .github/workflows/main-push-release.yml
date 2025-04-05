@@ -9,6 +9,13 @@ jobs:
   create-release:
     name: Create GitHub Release
     runs-on: ubuntu-22.04
+    
+    environment:
+      name: pypi
+      url: https://pypi.org/p/pyconject
+    
+    permissions:
+      id-token: write
 
     steps:
       - name: Checkout Code
@@ -19,16 +26,11 @@ jobs:
         with:
           python-version: "3.9"
 
-      - name: Install dependencies
+      - name: Build Package and Install
         run: |
-          python -m pip install --upgrade pip
-          pip install -r dev-requirements.txt 
-
-      - name: Build package
-        run: |
-          make clean build 
+          make install-reqs install-dev-reqs clean build install 
           
-      - name: Publish package distributions to PyPI
+      - name: Publish Package Distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
 
       - name: Extract Package Version
