@@ -1,4 +1,4 @@
-name: Create GitHub Release upon Push to Main
+name: Create release on pull-request to main
 
 on:
   push:
