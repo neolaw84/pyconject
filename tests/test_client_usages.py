@@ -139,8 +139,30 @@ class ClientUsageTest(TestCase):
                     "dev-default-in-func-definion",
                 )
 
+    def test_cntx_custom_cfg_dict_target_dev(self):
+        with patch(
+            "builtins.open",
+            get_dynamic_mock_open(
+                {
+                    (Path("./cfgs-custom.yml"), "rt"): self.configs,
+                    (Path("./custom-cfgs-dev.yml"), "rt"): self.configs_dev,
+                }
+            ),
+        ):
+            pyconject.init(globals())
+            with pyconject.cntx(config_path={"": "./cfgs-custom.yml", "dev": "./custom-cfgs-dev.yml"}, target="dev"):
+                a, b, c, d = black_func(1, 2)
+                assert (a, b, c, d) == (
+                    1,
+                    2,
+                    "clt-defined-in-configs-dev-c",
+                    "dev-default-in-func-definion",
+                )
+
     def test_cntx_default_m_func(self):
         pyconject.init(globals())
         with pyconject.cntx(config_path="tests/cfgs.yml"):
             a, b, c, d = dev_func_m()
             assert (a, b, c, d) == ("a1", 20002, 3003, 404)
+
+    
