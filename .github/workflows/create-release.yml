@@ -1,0 +1,46 @@
+name: Create release on pull-request to main
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-22.04
+    
+    environment:
+      name: pypi
+      url: https://pypi.org/p/pyconject
+    
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Build Package 
+        run: |
+          make install-reqs install-dev-reqs clean build  
+
+      - name: Extract Package Version
+        id: get_version
+        run: |
+          make install
+          echo "VERSION=$(python -c 'from pyconject import __version__; print(__version__)')" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.VERSION }}
+          release_name: Release ${{ env.VERSION }}
+          draft: false
+          prerelease: false
