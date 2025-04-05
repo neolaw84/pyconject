@@ -30,7 +30,7 @@ pythonpath = [
 ]
 
 [tool.bumpversion]
-current_version = "0.1.1"
+current_version = "0.1.2"
 parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<micro>\\d+)"
 serialize = ["{major}.{minor}.{micro}"]
 search = "{current_version}"

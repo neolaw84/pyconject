@@ -1,14 +1,13 @@
 from copy import deepcopy
 from pathlib import Path
+import logging
 import inspect
+
 from .registry import Registry
 from .utils import Stack, load_and_merge_configs, merge_dictionaries
 
-# def _get_caller():
-#     """Retrieves the globals() dictionary of the caller's frame."""
-
-#     caller_frame = inspect.currentframe().f_back.f_back
-#     return caller_frame
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class Cntx:
     def __init__(self, target=None, config_path=None, cntx_stack=None):
@@ -68,11 +67,19 @@ class CntxStack:
         configs = deepcopy(prev_configs)
         if config_path is None: 
             config_path = "./configs.yml"
-        config_path = Path(config_path)
-        configs = load_and_merge_configs(config_path, configs)
+        if isinstance(config_path, str):
+            config_path_ = Path(config_path)
+        elif isinstance(config_path, dict):
+            config_path_ = Path(config_path.get("", "./configs.yml"))
+        
+        logger.debug(f"loading user defined common config from {config_path}")
+        configs = load_and_merge_configs(config_path_, configs)
         
         if target is not None: 
-            tgt_config_path = config_path.parent / f"{config_path.stem}-{target}{config_path.suffix}"
+            tgt_config_path = config_path_.parent / f"{config_path_.stem}-{target}{config_path_.suffix}"
+            if isinstance(config_path, dict): 
+                tgt_config_path = config_path.get(target, tgt_config_path)
+            logger.debug(f"loading user defined {target} config from {tgt_config_path}")
             configs = load_and_merge_configs(tgt_config_path, configs)
         
         self.config_stack.push(configs)

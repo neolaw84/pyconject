@@ -27,7 +27,7 @@ install:
 	python rm.py -r -f ./pyconject.tar.gz
 
 test:
-	@pytest tests 
+	@pytest --cov src --cov-report term-missing --exitfirst --cov-fail-under=50 tests
 
 install-and-test: clean build install
 	@pytest --override-ini=pythonpath="tests" tests

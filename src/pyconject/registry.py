@@ -9,9 +9,14 @@ import inspect
 from pathlib import Path
 from typing import Callable, Dict, Union, List
 
+import logging
+
 from abc import ABC, abstractmethod
 
 from .utils import get_from_prefixed_tree, get_subs, init_default_dev_configs, load_and_merge_configs
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 def _check_if_method(func: Callable):
     return hasattr(func, "__self__") and getattr(func, "__self__", None) is not None 
@@ -235,6 +240,7 @@ class Registry:
         configs = {}
         for reg_item in sorted_reg_items:
             dev_config_path = reg_item.get_dev_config_paths()
+            logger.debug(f"dev_config_path of {reg_item.get_cname()} is {dev_config_path}")
             if target is None: target = ""
             if target is not None and target in dev_config_path:
                 configs = load_and_merge_configs(dev_config_path[target], configs, reg_item.prefix)
