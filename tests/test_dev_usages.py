@@ -8,14 +8,21 @@ import yaml
 # import pyconject as root_pyconject
 from pyconject import pyconject
 
-from dev_p.dev_sp.dev_m import dev_func, dev_func_sp, dev_func_m, dev_func_sp_custom, dev_func_sp_custom2
+from dev_p.dev_sp.dev_m import (
+    dev_func,
+    dev_func_sp,
+    dev_func_m,
+    dev_func_sp_custom,
+    dev_func_sp_custom2,
+)
+
 
 class DevUsageTest(TestCase):
 
     def setUp(self):
-        while(len(pyconject._cntx_stack.config_stack) > 0):
+        while len(pyconject._cntx_stack.config_stack) > 0:
             pyconject._cntx_stack.config_stack.pop()
-        while(len(pyconject._cntx_stack.target_stack) > 0):
+        while len(pyconject._cntx_stack.target_stack) > 0:
             pyconject._cntx_stack.target_stack.pop()
 
     def test_vanilla(self):
@@ -59,5 +66,3 @@ class DevUsageTest(TestCase):
         with pyconject.cntx(target="dev"):
             a, b, c, d = dev_func_sp_custom2()
             assert (a, b, c, d) == (111, 22, "cc", "dd")
-
-    

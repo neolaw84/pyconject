@@ -30,7 +30,7 @@ pythonpath = [
 ]
 
 [tool.bumpversion]
-current_version = "0.1.1"
+current_version = "0.1.4"
 parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<micro>\\d+)"
 serialize = ["{major}.{minor}.{micro}"]
 search = "{current_version}"
@@ -49,5 +49,5 @@ commit_args = ""
 
 [[tool.bumpversion.files]]
 filename = "./src/pyconject/__init__.py"
-search = "__version__ = '{current_version}'"
-replace = "__version__ = '{new_version}'"
+search = '__version__ = "{current_version}"'
+replace = '__version__ = "{new_version}"'
