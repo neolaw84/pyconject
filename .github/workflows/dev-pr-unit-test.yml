@@ -1,4 +1,4 @@
-name: Create pull-request to start Unit Test Workflow
+name: Starts unit-test on pull-request to dev
 
 on:
   pull_request:

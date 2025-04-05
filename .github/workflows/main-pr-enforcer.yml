@@ -1,8 +1,9 @@
-name: 'Check Branch'
+name: Enforce pull-request head is dev on pull-request to main
 
 on:
   pull_request:
-
+    branches:
+      - dev
 jobs:
   check_branch:
     runs-on: ubuntu-22.04
