@@ -13,6 +13,7 @@ jobs:
         if: ${{ github.head_ref != 'dev' }}
         run: |
           echo "ERROR: You can only merge to main from dev."
+          exit 1
       
       - name: Checkout Code
         uses: actions/checkout@v3
