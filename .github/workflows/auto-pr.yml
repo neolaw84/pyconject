@@ -1,0 +1,22 @@
+name: Auto-create PR from Dev to Main
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          base: main
+          branch: dev
+          title: Sync Dev to Main
+          body: Automated Pull Request from Dev to Main branch.
