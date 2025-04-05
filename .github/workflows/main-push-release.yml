@@ -19,6 +19,18 @@ jobs:
         with:
           python-version: "3.9"
 
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r dev-requirements.txt 
+
+      - name: Build package
+        run: |
+          make clean build
+          
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
       - name: Extract Package Version
         id: get_version
         run: |
