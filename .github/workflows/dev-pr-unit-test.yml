@@ -1,4 +1,4 @@
-name: Starts unit-test on pull-request to dev
+name: Start unit-test on pull-request to dev
 
 on:
   pull_request:
