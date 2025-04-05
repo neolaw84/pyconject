@@ -1,0 +1,32 @@
+name: Enforce pull-request head is dev on pull-request to main
+
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  check_branch:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check branch
+        if: github.base_ref == 'main' && github.head_ref != 'dev'
+        run: |
+          echo "ERROR: You can only merge to main from dev."
+          exit 1
+      
+      - name: Checkout Code
+        uses: actions/checkout@v3
+  
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'  # Specify your desired Python version
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install -r dev-requirements.txt
+
+      - name: Run Unit Tests
+        run: |
+          make install-and-test

@@ -2,6 +2,7 @@ import argparse
 from pathlib import Path
 from glob import glob
 
+
 def remove_file_or_directory(path: Path, force: bool = False):
     """
     Removes a file or directory recursively if it exists.
@@ -39,10 +40,12 @@ def main():
             for p in glob(path_str):
                 remove_file_or_directory(Path(p), force=args.force)
         except Exception as e:
-            print ("exception")
+            print("exception")
             import traceback as tb
+
             tb.print_stack()
             tb.print_tb(e.__traceback__)
+
 
 if __name__ == "__main__":
     main()

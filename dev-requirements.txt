@@ -1,5 +1,6 @@
-black
-twine
-build
-pytest
-bump-my-version
+black>=25.1.0,<25.2
+twine>=6.1.0,<6.2
+build>=1.2.2,<1.3
+pytest>=8.3.5,<8.4
+pytest-cov>=6.1.0,<6.2
+bump-my-version>=1.1.1,<1.2
