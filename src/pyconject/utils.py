@@ -1,8 +1,14 @@
 from typing import Dict
 
+from pathlib import Path
+import re
 import inspect
 import yaml
 
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 def merge_dictionaries(dict1, dict2) -> dict:
     merged = dict1.copy()
@@ -42,10 +48,74 @@ def init_default_dev_configs(configs_parent, base_file_stem, base_file_ext=".yml
     return _dict
 
 
+
+def resolve_reference(reference: str, config_path: Path) -> any:
+    """
+    Resolves a reference in the format "@path/to/file.yml:key1.key2".
+    If the file path is relative, it is resolved relative to `config_path`.
+    """
+    if not reference.startswith("@"):
+        return reference  # Not a reference, return as is
+
+    try:
+        # Extract file path and key path
+        match = re.match(r"@(.*?):(.*)", reference)
+        if not match:
+            # it is not a reference it seems
+            return reference
+
+        file_path, key_path = match.groups()
+
+        # Resolve relative paths
+        file_path = Path(file_path)
+        if not file_path.is_absolute():
+            file_path = config_path.parent / file_path
+
+        # Load the referenced YAML file
+        if file_path not in resolve_reference.yml_file_cache:
+            with open(file_path, "rt") as f:
+                resolve_reference.yml_file_cache[file_path] = yaml.safe_load(f)
+        
+        referenced_data = resolve_reference.yml_file_cache[file_path]
+
+        # Traverse the key path to get the value
+        keys = key_path.split(".")
+        for key in keys:
+            if isinstance(referenced_data, dict) and key in referenced_data:
+                referenced_data = referenced_data[key]
+            else:
+                logger.warning(
+                    f"Key '{key}' not found in {file_path}. Returning the original reference.")
+                # raise KeyError(f"Key path '{key_path}' not found in {file_path}")
+
+        return referenced_data
+    except Exception as e:
+        logger.warning(
+            f"Failed to resolve reference {reference}: {e}. Returning the original reference.")
+        # Optionally, you can raise an error or return a default value
+        # raise RuntimeError(f"Failed to resolve reference {reference}: {e}")
+
+resolve_reference.yml_file_cache = {}
+
+def resolve_references_in_dict(data: dict, config_path: Path) -> dict:
+    """
+    Recursively resolves references in a dictionary, using `config_path` for relative paths.
+    """
+    for key, value in data.items():
+        if isinstance(value, str):
+            data[key] = resolve_reference(value, config_path)
+        elif isinstance(value, dict):
+            data[key] = resolve_references_in_dict(value, config_path)
+    return data
+
 def load_and_merge_configs(config_path, configs, prefix=""):
     try:
         with open(config_path, "rt") as f:
             cfgs = yaml.safe_load(f)
+
+        # Resolve references in the loaded configuration
+        cfgs = resolve_references_in_dict(cfgs, config_path)
+
         tmp = create_prefixed_tree(cfgs, prefix)
         configs = merge_dictionaries(configs, tmp)
     except:

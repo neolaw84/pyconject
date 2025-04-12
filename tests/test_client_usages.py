@@ -165,4 +165,43 @@ class ClientUsageTest(TestCase):
             a, b, c, d = dev_func_m()
             assert (a, b, c, d) == ("a1", 20002, 3003, 404)
 
-    
+    def test_cntx_with_relative_references(self):
+        configs = yaml.dump(
+            {
+                "black_p": {
+                    "black_sp": {
+                        "black_m": {
+                            "black_func": {
+                                "a": "a",
+                                "b": "b",
+                                "c": "@config-main.yml:black_func_configs.value_c",
+                                "d": "@config-main.yml:black_func_configs.value_d",
+                            }
+                        }
+                    }
+                }
+            }
+        )
+        config_main = yaml.dump(
+            {
+                "black_func_configs": {
+                    "value_c": "ccc",
+                    "value_d": "ddd",
+                }
+            }
+        )
+
+        with patch(
+            "builtins.open",
+            get_dynamic_mock_open(
+                {
+                    (Path("./config.yml"), "rt"): configs,
+                    (Path("./config-main.yml"), "rt"): config_main,
+                }
+            ),
+        ):
+
+            pyconject.init(globals())
+            with pyconject.cntx(config_path="./config.yml"):
+                a, b, c, d = black_func()
+                assert (a, b, c, d) == ("a", "b", "ccc", "ddd")
