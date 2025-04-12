@@ -10,6 +10,12 @@ def func(_func=None):
         else _cntx_stack.registry.register(_func, by_dev=True)
     )
 
+def clss(_clss=None):
+    return (
+        functools.partial(_cntx_stack.registry.register, by_dev=True)
+        if _clss is None
+        else _cntx_stack.registry.register(_clss, by_dev=True)
+    )
 
 def mdle(_mdle: str):
     return _cntx_stack.registry.register(_mdle, by_dev=True)

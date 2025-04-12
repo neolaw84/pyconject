@@ -99,13 +99,14 @@ def dev_func(a, b, c, d):
 
 * Developer integration
   * ~~Functions~~ done
-  * Singletons/Classes
+  * ~~Singletons/Classes~~ 
+    * Note: Singleton is de-scoped as the client should control the life-cycle of the objects
   * ~~Modules~~ done
   * ~~Packages~~ done
   
 * Client integration
   * ~~Functions~~ done
-  * Singletons/Classes
+  * ~~Singletons/Classes~~
   * ~~Modules~~
   * ~~Packages~~
   * ~~Auto-detect when cntx open~~ use `pyconject.init(globals())` instead
@@ -126,5 +127,5 @@ def dev_func(a, b, c, d):
   * ~~Usage~~ done
 
 * CI/CD
-  * github actions to unittest at push and pull-request
-  * github actions to publish to pypi after merge
+  * ~~github actions to unittest at push and pull-request~~
+  * ~~github actions to publish to pypi after merge~~
