@@ -6,6 +6,7 @@ on:
       - main
 
 jobs:
+
   create-release:
     name: Create GitHub Release
     runs-on: ubuntu-22.04
@@ -16,6 +17,7 @@ jobs:
     
     permissions:
       id-token: write
+      contents: write
 
     steps:
       - name: Checkout Code
@@ -26,9 +28,9 @@ jobs:
         with:
           python-version: "3.9"
 
-      - name: Build Package and Install
+      - name: Build Package 
         run: |
-          make install-reqs install-dev-reqs clean build install 
+          make install-reqs install-dev-reqs clean build  
           
       - name: Publish Package Distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
