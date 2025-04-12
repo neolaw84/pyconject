@@ -9,7 +9,7 @@ from pyconject import pyconject
 from pyconject.context import CntxStack
 
 from unittest_utils import get_dynamic_mock_open, remove_file_or_directory
-from black_p.black_sp.black_m import black_func
+from black_p.black_sp.black_m import black_func, BlackClass
 from dev_p.dev_sp.dev_m import dev_func_m
 
 
@@ -150,7 +150,10 @@ class ClientUsageTest(TestCase):
             ),
         ):
             pyconject.init(globals())
-            with pyconject.cntx(config_path={"": "./cfgs-custom.yml", "dev": "./custom-cfgs-dev.yml"}, target="dev"):
+            with pyconject.cntx(
+                config_path={"": "./cfgs-custom.yml", "dev": "./custom-cfgs-dev.yml"},
+                target="dev",
+            ):
                 a, b, c, d = black_func(1, 2)
                 assert (a, b, c, d) == (
                     1,
@@ -205,3 +208,37 @@ class ClientUsageTest(TestCase):
             with pyconject.cntx(config_path="./config.yml"):
                 a, b, c, d = black_func()
                 assert (a, b, c, d) == ("a", "b", "ccc", "ddd")
+
+    def test_class(self):
+        configs = yaml.dump(
+            {
+                "black_p": {
+                    "black_sp": {
+                        "black_m": {
+                            "BlackClass": {
+                                "__init__": {"a": "a"},
+                                "black_method": {
+                                    "b": "b",
+                                },
+                            }
+                        }
+                    }
+                }
+            }
+        )
+
+        with patch(
+            "builtins.open",
+            get_dynamic_mock_open(
+                {
+                    (Path("./config.yml"), "rt"): configs,
+                }
+            ),
+        ):
+
+            pyconject.init(globals())
+            with pyconject.cntx(config_path="./config.yml"):
+                black_class = BlackClass()
+                assert black_class.a == "a"
+                results = black_class.black_method()
+                assert results == ("a", "b")

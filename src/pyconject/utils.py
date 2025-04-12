@@ -10,6 +10,7 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+
 def merge_dictionaries(dict1, dict2) -> dict:
     merged = dict1.copy()
     for key, value in dict2.items():
@@ -48,7 +49,6 @@ def init_default_dev_configs(configs_parent, base_file_stem, base_file_ext=".yml
     return _dict
 
 
-
 def resolve_reference(reference: str, config_path: Path) -> any:
     """
     Resolves a reference in the format "@path/to/file.yml:key1.key2".
@@ -75,7 +75,7 @@ def resolve_reference(reference: str, config_path: Path) -> any:
         if file_path not in resolve_reference.yml_file_cache:
             with open(file_path, "rt") as f:
                 resolve_reference.yml_file_cache[file_path] = yaml.safe_load(f)
-        
+
         referenced_data = resolve_reference.yml_file_cache[file_path]
 
         # Traverse the key path to get the value
@@ -85,17 +85,21 @@ def resolve_reference(reference: str, config_path: Path) -> any:
                 referenced_data = referenced_data[key]
             else:
                 logger.warning(
-                    f"Key '{key}' not found in {file_path}. Returning the original reference.")
+                    f"Key '{key}' not found in {file_path}. Returning the original reference."
+                )
                 # raise KeyError(f"Key path '{key_path}' not found in {file_path}")
 
         return referenced_data
     except Exception as e:
         logger.warning(
-            f"Failed to resolve reference {reference}: {e}. Returning the original reference.")
+            f"Failed to resolve reference {reference}: {e}. Returning the original reference."
+        )
         # Optionally, you can raise an error or return a default value
         # raise RuntimeError(f"Failed to resolve reference {reference}: {e}")
 
+
 resolve_reference.yml_file_cache = {}
+
 
 def resolve_references_in_dict(data: dict, config_path: Path) -> dict:
     """
@@ -107,6 +111,7 @@ def resolve_references_in_dict(data: dict, config_path: Path) -> dict:
         elif isinstance(value, dict):
             data[key] = resolve_references_in_dict(value, config_path)
     return data
+
 
 def load_and_merge_configs(config_path, configs, prefix=""):
     try:
