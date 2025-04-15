@@ -1,3 +1,10 @@
+"""
+Defines the registry system for `pyconject`.
+
+This module provides classes and functions for managing registered items,
+including functions, classes, modules, and packages.
+"""
+
 from __future__ import annotations
 
 import importlib
@@ -37,6 +44,17 @@ class RegItemType(Enum):
 
 
 class RegItem(ABC):
+    """
+    Abstract base class for registered items.
+
+    Attributes:
+        item (callable or str): The registered item.
+        reg_item_type (RegItemType): The type of the registered item.
+        file_path (Path): The file path of the registered item.
+        m (module): The module containing the registered item.
+        cname (tuple): The canonical name of the item.
+        prefix (str): The prefix for configuration keys.
+    """
     def __init__(
         self, item: Union[Callable, str], reg_item_type: RegItemType, file_path: Path, m
     ):
@@ -85,6 +103,9 @@ class RegItem(ABC):
 
 
 class Function(RegItem):
+    """
+    Represents a registered function.
+    """
     def get_cname(self):
         return (self.item.__module__, self.item.__qualname__)
 
@@ -110,15 +131,11 @@ class Function(RegItem):
 
         return _temp_dict  # this also covers when self.configs is None
 
-    # def get_prefix(self):
-    #     return (
-    #         ".".join(self.cname)
-    #         if self.reg_item_type == RegItemType.FUNC
-    #         else ".".join((self.cname[0], self.cname[1].replace(".", "-")))
-    #     )
-
 
 class Class(RegItem):
+    """
+    Represents a registered class.
+    """
     def get_cname(self):
         return (self.item.__module__, self.item.__qualname__)
 
@@ -145,6 +162,9 @@ class Class(RegItem):
 
 
 class Module(RegItem):
+    """
+    Represents a registered module.
+    """
     def get_cname(self):
         parts = self.m.__name__.split(".")
         return (".".join(parts[:-1]), parts[-1])
@@ -171,15 +191,12 @@ class Module(RegItem):
 
         return _temp_dict  # this also covers when self.configs is None
 
-    # def get_prefix(self):
-    #     return (
-    #         ".".join(self.cname)
-    #         if self.reg_item_type == RegItemType.FUNC
-    #         else ".".join((self.cname[0], self.cname[1].replace(".", "-")))
-    #     )
 
 
 class Package(RegItem):
+    """
+    Represents a registered package.
+    """
     def get_cname(self):
         parts = self.m.__name__.split(".")
         return (".".join(parts[:-1]), parts[-1])
@@ -205,13 +222,6 @@ class Package(RegItem):
                 _temp_dict[k] = str(configs_parent / v)
 
         return _temp_dict  # this also covers when dev_configs is None
-
-    # def get_prefix(self):
-    #     return (
-    #         ".".join(self.cname)
-    #         if self.reg_item_type == RegItemType.FUNC
-    #         else ".".join((self.cname[0], self.cname[1].replace(".", "-")))
-    #     )
 
 
 def _create_reg_item(item) -> RegItem:
@@ -320,7 +330,14 @@ def _register_class(cls, cntx_stack):
 
 
 class Registry:
+    """
+    Manages the registration of items in `pyconject`.
 
+    Attributes:
+        _cntx_stack (CntxStack): The context stack instance.
+        _registry (dict): A dictionary of registered items.
+        _loaded_dev_configs (dict): Cached development configurations.
+    """
     def __init__(self, cntx_stack):
         self._cntx_stack = cntx_stack
         self._registry = {}

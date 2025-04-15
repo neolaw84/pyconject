@@ -171,3 +171,5 @@ notebooks
 **/*.egg-info
 
 data
+
+docs

@@ -1,3 +1,10 @@
+"""
+Defines the context management system for `pyconject`.
+
+This module provides the `Cntx` class for managing configuration contexts
+and the `CntxStack` singleton for handling configuration stacks.
+"""
+
 from copy import deepcopy
 from pathlib import Path
 import logging
@@ -9,8 +16,16 @@ from .utils import Stack, load_and_merge_configs, merge_dictionaries
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-
 class Cntx:
+    """
+    Represents a configuration context.
+
+    Attributes:
+        target (str): The target environment (e.g., "dev", "stg", "prd").
+        config_path (str or Path): The path to the configuration file.
+        cntx_stack (CntxStack): The context stack instance.
+    """
+
     def __init__(self, target=None, config_path=None, cntx_stack=None):
         self.cntx_stack = cntx_stack if cntx_stack else _cntx_stack
 
@@ -34,6 +49,7 @@ class Cntx:
         self.config_path = config_path
 
     def __enter__(self):
+        """Enters the context, stacking configurations."""
         self.cntx_stack.stack(target=self.target, config_path=self.config_path)
 
         # new_globals = {n: self.cntx_stack.registry.register(v, by_dev=False) for n, v in self.glb.items()}
@@ -42,10 +58,19 @@ class Cntx:
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
+        """Exits the context, unstacking configurations."""
         self.cntx_stack.unstack()
 
 
 class CntxStack:
+    """
+    Singleton class for managing configuration stacks.
+
+    Attributes:
+        config_stack (Stack): Stack of configuration dictionaries.
+        target_stack (Stack): Stack of target environments.
+        registry (Registry): The registry for managing registered items.
+    """
     _instance = None
 
     def __new__(cls):
