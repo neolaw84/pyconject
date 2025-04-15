@@ -1,3 +1,10 @@
+"""
+Utility functions for `pyconject`.
+
+This module provides helper functions for merging dictionaries, resolving
+references, and managing configurations.
+"""
+
 from typing import Dict
 
 from pathlib import Path
@@ -12,6 +19,16 @@ logger.setLevel(logging.INFO)
 
 
 def merge_dictionaries(dict1, dict2) -> dict:
+    """
+    Merges two dictionaries recursively.
+
+    Args:
+        dict1 (dict): The first dictionary.
+        dict2 (dict): The second dictionary.
+
+    Returns:
+        dict: The merged dictionary.
+    """
     merged = dict1.copy()
     for key, value in dict2.items():
         if key in merged and isinstance(merged[key], dict) and isinstance(value, dict):
@@ -52,7 +69,13 @@ def init_default_dev_configs(configs_parent, base_file_stem, base_file_ext=".yml
 def resolve_reference(reference: str, config_path: Path) -> any:
     """
     Resolves a reference in the format "@path/to/file.yml:key1.key2".
-    If the file path is relative, it is resolved relative to `config_path`.
+
+    Args:
+        reference (str): The reference string.
+        config_path (Path): The path to the configuration file.
+
+    Returns:
+        any: The resolved value.
     """
     if not reference.startswith("@"):
         return reference  # Not a reference, return as is
@@ -170,6 +193,15 @@ def get_subs(module):
 
 
 class Stack:
+    """
+    A simple stack implementation.
+
+    Methods:
+        push(item): Pushes an item onto the stack.
+        pop(): Removes and returns the top item from the stack.
+        peek(): Returns the top item without removing it.
+        is_empty(): Checks if the stack is empty.
+    """
     def __init__(self):
         self._items = []
 
