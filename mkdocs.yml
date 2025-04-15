@@ -1,0 +1,12 @@
+site_name: pyconject
+repo_url: https://github.com/neolaw84/pyconject
+theme:
+  name: material
+nav:
+  - Home: index.md
+  - Usage: usage.md
+  - API Reference: 
+      - pyconject: api/pyconject/pyconject.html
+      - utils: api/pyconject/utils.html
+      - registry: api/pyconject/registry.html
+      - context: api/pyconject/context.html

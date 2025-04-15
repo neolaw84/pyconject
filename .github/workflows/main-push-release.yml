@@ -31,7 +31,14 @@ jobs:
       - name: Build Package 
         run: |
           make install-reqs install-dev-reqs clean build  
-          
+      
+      - name: Deploy Documentations to GitHub Pages
+        run: |
+          python -m pdoc --output-dir docs/api src/pyconject
+          cp README.md docs/index.md
+          cp usage.md docs/usage.md
+          mkdocs gh-deploy --force
+
       - name: Publish Package Distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
 

@@ -8,7 +8,7 @@
 
 # Usage
 
-For detailed usage, refer to [usage.md](usage.md).
+For detailed usage, refer to [usage](docs/usage.md).
 
 ## TL;DR
 
@@ -95,37 +95,42 @@ def dev_func(a, b, c, d):
   return results
 ```
 
-# To dos
+# Features
 
 * Developer integration
-  * ~~Functions~~ done
-  * ~~Singletons/Classes~~ 
-    * Note: Singleton is de-scoped as the client should control the life-cycle of the objects
-  * ~~Modules~~ done
-  * ~~Packages~~ done
+  * Functions
+  * Classes
+  * Modules 
+  * Packages 
   
 * Client integration
-  * ~~Functions~~ done
-  * ~~Singletons/Classes~~
-  * ~~Modules~~
-  * ~~Packages~~
-  * ~~Auto-detect when cntx open~~ use `pyconject.init(globals())` instead
+  * Functions
+  * Classes
+  * Modules
+  * Packages
+  * Init (with `globals()`)
+
+* Type of configs
+  * **yaml -- priority**
+    * reference other yaml files
+  * environment/target selection
+
+## To Dos
 
 * Generate config files
 
 * Raw retrieval of resolved configs (to manipulate by user)
 
-* Type of configs
-  * ~~**yaml -- priority**~~ done
-  * ~~environment/target selection~~ done
+* Other types of configs
   * .env
-  * overrides
+  * override by
     * environment variables
     * commandline arguments
 
-* Documentations
-  * ~~Usage~~ done
+## How to contribute
 
-* CI/CD
-  * ~~github actions to unittest at push and pull-request~~
-  * ~~github actions to publish to pypi after merge~~
+* Create a PR into `dev` branch. 
+  * Github actions will run unit-tests. 
+* Periodically, the package maintainer will PR into `main` branch.
+  * Unit-tests will be run again. 
+  * When merged, pypi package and github releases will be published.
