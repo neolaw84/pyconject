@@ -1,0 +1,1078 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../api/pyconject/pyconject.html">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.11">
+    
+    
+      
+        <title>Usage - pyconject</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.4af4bdda.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#usage" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="pyconject" class="md-header__button md-logo" aria-label="pyconject" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyconject
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Usage
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/neolaw84/pyconject" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="pyconject" class="md-nav__button md-logo" aria-label="pyconject" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    pyconject
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/neolaw84/pyconject" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Usage
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Usage
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-client-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Client usage
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Client usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-default-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.1. Default usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-target-smart-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.2. target smart features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-custom-config-file-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.3. Custom config file names
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-dev-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Dev usage
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Dev usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-registering-a-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.1. Registering a module
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-tree-smart-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.2. Tree smart features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-target-smart-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.3. target smart features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-custom-config-file-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.4. Custom config file names
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-resolving-collisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Resolving collisions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Resolving collisions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-example-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.1. Example 1:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-example-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.2. Example 2:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyconject/pyconject.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    pyconject
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyconject/utils.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    utils
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyconject/registry.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    registry
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyconject/context.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    context
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-client-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Client usage
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Client usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-default-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.1. Default usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-target-smart-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.2. target smart features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-custom-config-file-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.3. Custom config file names
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-dev-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Dev usage
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Dev usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-registering-a-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.1. Registering a module
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-tree-smart-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.2. Tree smart features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-target-smart-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.3. target smart features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-custom-config-file-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.4. Custom config file names
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-resolving-collisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Resolving collisions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Resolving collisions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-example-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.1. Example 1:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-example-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.2. Example 2:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="usage">Usage</h1>
+<p><code>pyconject</code> caters two groups of users: </p>
+<ul>
+<li>client-users: the clients of the python libraries and </li>
+<li>dev-users: the developers of these python libraries.</li>
+</ul>
+<h2 id="1-client-usage">1. Client usage</h2>
+<blockquote>
+<p>Beautiful is better than ugly. <a href="https://peps.python.org/pep-0020/">[PEP-20]</a></p>
+</blockquote>
+<p>Consider the following python script that is using a black box function <code>black_func</code> defined in <code>black_p.black_sp.black_m</code>.</p>
+<pre><code class="language-python"># in usr_p/usr_sp/usr_m.py
+from black_p.black_sp.black_m import black_func
+
+# initialize values_a, value_b, 
+# value_c and value_d.
+# this part is often the ugly mess
+# because it involves reading yaml 
+# or other tree-like files and 
+# assigning values
+import yaml
+with open(&quot;./configs.yml&quot;, &quot;rt&quot;) as f:
+  configs = yaml.safe_load(f)
+  black_func_parameters = configs[&quot;black_p&quot;][&quot;black_sp&quot;][&quot;black_m&quot;][&quot;black_func&quot;]
+  value_a = black_func_parameters[&quot;a&quot;]
+  value_b = black_func_parameters[&quot;b&quot;]
+  value_c = black_func_parameters[&quot;c&quot;]
+  value_d = black_func_parameters[&quot;d&quot;]
+
+black_func(a=value_a, b=value_b, c=value_c, d=value_d)
+</code></pre>
+<p>We give the content of the <code>configs.yml</code> file as follow for completeness:</p>
+<pre><code class="language-yaml"># in ./configs.yml
+black_p:
+  black_sp:
+    black_m:
+      black_func:
+        a: 1
+        b: 2
+        c: 3
+        d: 4
+</code></pre>
+<p>Imagine this script needs to initialize a lot of variables such as <code>a</code>, <code>b</code>, <code>c</code> and <code>d</code> for the likes of <code>black_func</code>. This will overwhelm the client users and makes the script code <strong><em>ugly</em></strong>.</p>
+<h3 id="11-default-usage">1.1. Default usage</h3>
+<p><code>pyconject</code> allows a client user to define a yaml file to inject the variable values as follow: </p>
+<pre><code class="language-python"># in usr_p/usr_sp/usr_m.py
+from black_p.black_sp.black_m import black_func
+
+# pyconject initializes values of a, b, c and d.
+from pyconject import pyconject
+
+pyconject.init(globals())
+
+with pyconject.cntx():
+    black_func() 
+</code></pre>
+<p>Notice, there needs just 3 lines of code to let <code>pyconject</code> inject the configs defined in the current working directory:</p>
+<ol>
+<li>importing pyconject: <code>from pyconject import pyconject</code></li>
+<li>letting <code>pyconject</code> knows that it needs to manage <code>globals()</code> dictionary: <code>pyconject.init(globals())</code></li>
+<li>running <code>black_func</code> in the <code>pyconject</code> context: <code>with pyconject.cntx():</code></li>
+</ol>
+<p>In this specific example, <code>pyconject</code> will inject a=1, b=2, c=3 and d=4 into the running script.</p>
+<h3 id="12-target-smart-features">1.2. <code>target</code> smart features</h3>
+<p><code>pyconject</code> is aware of the fact that many user scripts need to use different configurations for different environment. By default, <code>pyconject</code> supports 3 <code>target</code>s:</p>
+<ul>
+<li><code>dev</code> for development</li>
+<li><code>stg</code> for staging and</li>
+<li><code>prd</code> for production</li>
+</ul>
+<p>In the above running example, user simply needs to append <code>-&lt;target&gt;</code> in the stem of the config file names to let <code>pyconject</code> chooses <code>target</code>-specific configs file.</p>
+<pre><code class="language-yaml"># in ./configs-dev.yml
+black_p:
+  black_sp:
+    black_m:
+      black_func:
+        c: 30
+        d: 40
+</code></pre>
+<pre><code class="language-python"># in usr_p/usr_sp/usr_m.py
+from black_p.black_sp.black_m import black_func
+
+# initialize values of a, b, c and d.
+from pyconject import pyconject
+
+pyconject.init(globals())
+
+with pyconject.cntx(target=&quot;dev&quot;):
+    black_func(a=a, b=b, c=c, d=d)
+</code></pre>
+<p>In this way, <code>pyconject</code> will inject a=1 and b=2 as defined in <code>configs.yml</code> and c=30 and d=40 as defined in <code>configs-dev.yml</code>.</p>
+<blockquote>
+<p>Notice that <code>pyconject</code> overrides values from <code>configs.yml</code> with values from <code>configs-&lt;target&gt;.yml</code> if a <code>target</code> is specified. </p>
+</blockquote>
+<h3 id="13-custom-config-file-names">1.3. Custom config file names</h3>
+<p><code>pyconject</code> also allows client-users to name config files differently and save in arbitrary path. If the client-user creates the following two config files:</p>
+<pre><code class="language-yaml"># in /path/to/user/defined/configs/cfg.yml
+black_p:
+  black_sp:
+    black_m:
+      black_func:
+        a: 1
+        b: 2
+        c: 3
+        d: 4
+</code></pre>
+<pre><code class="language-yaml"># in /path/to/user/defined/configs/cfg-dev.yml
+black_p:
+  black_sp:
+    black_m:
+      black_func:
+        c: 30
+        d: 40
+</code></pre>
+<pre><code class="language-python"># in usr_p/usr_sp/usr_m.py
+from black_p.black_sp.black_m import black_func
+
+# initialize values of a, b, c and d.
+from pyconject import pyconject
+
+pyconject.init(globals())
+
+with pyconject.cntx(
+        config_path=&quot;/path/to/user/defined/configs/cfg.yml&quot;, 
+        target=&quot;dev&quot;
+    ):
+    black_func(a=a, b=b, c=c, d=d)
+</code></pre>
+<p><code>pyconject</code> will inject configs in <code>cfg.yml</code> and <code>cfg-dev.yml</code> as a = 1, b = 2, c = 30 and d = 40. </p>
+<blockquote>
+<p>Notice that <code>cfg.yml</code> and <code>cfg-dev.yml</code> still needs to be in the same directory with each other.</p>
+</blockquote>
+<h2 id="2-dev-usage">2. Dev usage</h2>
+<blockquote>
+<p>Explicit is better than implicit. <a href="https://peps.python.org/pep-0020/">[PEP-20]</a></p>
+</blockquote>
+<p>Even though users can initialize <code>pyconject</code> by calling <code>pyconject.init</code> to have parameters injected into any function, it will be better if <code>pyconject</code> allows developer of python libraries to <strong><em>explictly</em></strong> pre-initialize/pre-register their functions (and modules) for the user scripts. </p>
+<p>In addition, they can define default parameter values and <code>target</code>-specific parameter values. </p>
+<blockquote>
+<p>Notice that the user can overwrite these defaults either using <code>pyconject</code> or directly in their code. </p>
+<p>This is not a new concept <code>pyconject</code> introduces as, from the very beginning, users of libraries can pass any value to any parameter.</p>
+</blockquote>
+<p>Consider the following directory tree:</p>
+<pre><code>dev_p
+│   __init.py
+│
+└───dev_sp
+        dev_m.py
+        __init__.py
+</code></pre>
+<h3 id="21-registering-a-module">2.1. Registering a module</h3>
+<pre><code class="language-python"># in dev_p/dev_sp/dev_m.py
+def dev_func(a, b, c, d):
+    return a, b, c, d
+</code></pre>
+<p>To register the <code>dev_p</code> module in <code>pyconject</code>, the developer needs to explicitly register it as follow:</p>
+<pre><code class="language-python"># in dev_p/__init__.py
+from pyconject import pyconject
+pyconject.mdle(__name__)
+</code></pre>
+<p>By default, <code>pyconject</code> will try to find the configurations in this file: <code>dev_p/pyconject.yml</code></p>
+<pre><code class="language-yaml"># in dev_p/pyconject.yml
+dev_sp:
+  dev_m: 
+    dev_func:
+      a: 101
+      b: 202
+      c: 303
+      d: 404
+</code></pre>
+<p>Then, <code>pyconject</code> will inject the configs for <code>dev_func</code> as follow: </p>
+<pre><code class="language-python">from dev_p.dev_sp.dev_m import dev_func
+# notice client needs not be aware of pyconject here
+aa, bb, cc, dd = dev_func()
+
+# this will print 101, 202, 303, 404
+print (aa, bb, cc, dd) 
+</code></pre>
+<h3 id="22-tree-smart-features">2.2. Tree smart features</h3>
+<p><code>pyconject</code> expects different kinds of <code>yaml</code> trees for client-users and dev-users. More specifically, <code>pyconject</code> understands the configs defined in <code>dev_p/pyconject.yml</code> is for package <code>dev_p</code> (package level configs). That's why <code>dev_p/pyconject.yml</code> tree does not need to specify <code>dev_p</code> like it would require for client-user's <code>configs.yml</code> file.</p>
+<p>Likewise, <code>pyconject</code> understands the configs defined in <code>dev_p/dev_sp/pyconject.yml</code> is for sub-package <code>dev_p.dev_sp</code> (sub-package level configs). It will look like the followings: </p>
+<pre><code class="language-yaml"># in dev_p/dev_sp/pyconject.yml
+dev_m: 
+  dev_func:
+    a: 1001
+    b: 2002
+    c: 3003
+</code></pre>
+<p>Similarly, <code>pyconject</code> understands the configs defined in <code>dev_p/dev_sp/pyconject-dev_m.yml</code> is for module <code>dev_p.dev_sp.dev_m</code> (referred to as module level configs from its name). It will look like the followings:</p>
+<pre><code class="language-yaml"># in dev_p/dev_sp/pyconject-dev_m.yml
+dev_func:
+  a: 10001
+  b: 20002
+</code></pre>
+<p>Finally, <code>pyconject</code> also understands the configs defined in <code>dev_p/dev_sp/pyconject-dev_m-dev_func.yml</code> is for function <code>dev_p.dev_sp.dev_m.dev_func</code> (referred to as function level configs from its name). It will look like the followings:</p>
+<pre><code class="language-yaml"># in dev_p/dev_sp/pyconject-dev_m-dev_func.yml
+a: 100001
+</code></pre>
+<h3 id="23-target-smart-features">2.3. <code>target</code> smart features</h3>
+<p>Of course, <code>pyconject</code> also allows dev-users to specify <code>target</code>-specific configs.</p>
+<blockquote>
+<p>Non-target specific default configurations can be achieved with ordinary python default parameter values as well such as <code>def dev_func(a, b, c=333, d=444):</code>.</p>
+</blockquote>
+<p>To define <code>target</code>-specific configs, just append <code>-&lt;target&gt;</code> in the stem of the filename of the respective configs. For example,</p>
+<ul>
+<li><code>dev_p/pyconject-dev.yml</code></li>
+<li><code>dev_p/dev_sp/pyconject-stg.yml</code></li>
+<li><code>dev_p/dev_sp/pyconject-dev_m-prd.yml</code></li>
+</ul>
+<blockquote>
+<p>The specific <code>target</code> names are in the contract between developer and client of the respective python library and, hence, out of scope for <code>pyconject</code>. </p>
+<p>Nonetheless, <code>pyconject</code> recommends to set <code>dev</code>, <code>stg</code> and <code>prd</code>. </p>
+</blockquote>
+<h3 id="24-custom-config-file-names">2.4. Custom config file names</h3>
+<p>Like client-users, dev-users can also define custom file names for <code>pyconject</code> configs.</p>
+<pre><code class="language-python"># in dev_p/dev_sp/dev_m.py
+
+from pyconject import pyconject
+
+@pyconject.func
+def dev_func(a, b, c, d):
+  dev_func.pyconject = &quot;custom-name.yml&quot;
+  return a, b, c, d
+
+@pyconject.func
+def dev_func_target(a, b, c, d):
+  dev_func.pyconject = {&quot;dev&quot; : &quot;custom-dev.yml&quot;, &quot;stg&quot; : &quot;custom-stg.yml&quot;}
+  return a, b, c, d
+</code></pre>
+<blockquote>
+<p>Notice that <code>pyconject</code> still infers the functions (and modules) the configs is supposed to be injected based on the directory structure. Therefore, it is imperative to give the path relative to the respective module file. </p>
+</blockquote>
+<h2 id="3-resolving-collisions">3. Resolving collisions</h2>
+<p>If multiple config files specify the same values, <code>pyconject</code> resolves them as follow (higher entry overrides lower entries):</p>
+<ul>
+<li>explicitly specifying in <code>python</code> code such as <code>dev_func(a=0.1, b=0.2, c=0.3, d=0.4)</code></li>
+<li>This is backward-compatibility feature.</li>
+<li>
+<p>specified in <code>target</code>-specific configs defined by client-user such as <code>configs-dev.yml</code></p>
+</li>
+<li>
+<p>specified in <code>target</code>-specific function level configs defined by dev-user such as <code>dev_p/dev_sp/pyconject-dev_m-dev_func-dev.yml</code></p>
+</li>
+<li>specified in <code>target</code>-specific module level configs defined by dev-user such as <code>dev_p/dev_sp/pyconject-dev_m.yml</code></li>
+<li>specified in <code>target</code>-specific sub-package level configs defined by dev-user such as <code>dev_p/dev_sp/pyconject-dev.yml</code></li>
+<li>specified in <code>target</code>-specific package level configs defined by dev-user such as <code>dev_p/pyconject-dev.yml</code></li>
+<li>specified in configs defined by client-user such as <code>configs.yml</code></li>
+<li>specified in function level configs defined by dev-user such as <code>dev_p/dev_sp/pyconject-dev_m-dev_func.yml</code></li>
+<li>specified in module level configs defined by dev-user such as <code>dev_p/dev_sp/pyconject-dev_m.yml</code></li>
+<li>specified in sub-package level configs defined by dev-user such as <code>dev_p/dev_sp/pyconject.yml</code></li>
+<li>specified in package level configs defined by dev-user such as <code>dev_p/pyconject.yml</code></li>
+</ul>
+<h3 id="31-example-1">3.1. Example 1:</h3>
+<p>When there is no client-user configs defined,</p>
+<pre><code class="language-python">from dev_p.dev_sp.dev_m import dev_func
+
+aa, bb, cc, dd = dev_func()
+
+# this will print 100001, 20002, 3003, 404
+print (aa, bb, cc, dd) 
+</code></pre>
+<h3 id="32-example-2">3.2. Example 2:</h3>
+<p>When there are client-user configs defined as follow:</p>
+<pre><code class="language-yaml"># in ./configs.yml
+dev_p:
+  dev_sp:
+    dev_m:
+      dev_func:
+        a: 0.1
+        b: 0.2
+</code></pre>
+<p>and</p>
+<pre><code class="language-yaml"># in ./configs-dev.yml
+dev_p:
+  dev_sp:
+    dev_m:
+      dev_func:
+        a: 0.01
+</code></pre>
+<pre><code class="language-python">from dev_p.dev_sp.dev_m import dev_func
+
+from pyconject import pyconject
+
+with pyconject.cntx(target=&quot;dev&quot;): 
+    aa, bb, cc, dd = dev_func()
+
+    # this will print 0.01, 0.2, 3003, 404
+    print (aa, bb, cc, dd) 
+</code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+    
+  </body>
+</html>
