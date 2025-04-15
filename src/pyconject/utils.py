@@ -57,6 +57,10 @@ def resolve_reference(reference: str, config_path: Path) -> any:
     if not reference.startswith("@"):
         return reference  # Not a reference, return as is
 
+    if reference.startswith("@@"):
+        # This is a special case for escaped @ character
+        return reference[1:]
+
     try:
         # Extract file path and key path
         match = re.match(r"@(.*?):(.*)", reference)
