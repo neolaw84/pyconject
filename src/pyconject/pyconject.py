@@ -26,6 +26,7 @@ def func(_func=None):
         else _cntx_stack.registry.register(_func, by_dev=True)
     )
 
+
 def clss(_clss=None):
     """
     Registers a class with `pyconject`.
@@ -41,6 +42,7 @@ def clss(_clss=None):
         if _clss is None
         else _cntx_stack.registry.register(_clss, by_dev=True)
     )
+
 
 def mdle(_mdle: str):
     """

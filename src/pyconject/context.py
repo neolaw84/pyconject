@@ -16,6 +16,7 @@ from .utils import Stack, load_and_merge_configs, merge_dictionaries
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+
 class Cntx:
     """
     Represents a configuration context.
@@ -71,6 +72,7 @@ class CntxStack:
         target_stack (Stack): Stack of target environments.
         registry (Registry): The registry for managing registered items.
     """
+
     _instance = None
 
     def __new__(cls):

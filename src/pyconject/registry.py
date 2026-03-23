@@ -55,6 +55,7 @@ class RegItem(ABC):
         cname (tuple): The canonical name of the item.
         prefix (str): The prefix for configuration keys.
     """
+
     def __init__(
         self, item: Union[Callable, str], reg_item_type: RegItemType, file_path: Path, m
     ):
@@ -85,7 +86,7 @@ class RegItem(ABC):
         )
 
     @abstractmethod
-    def get_dev_config_paths(self):
+    def get_dev_config_paths(self, target: str = None):
         raise NotImplementedError(
             "entry is an abstract class and hasn't implemented get_dev_config_paths."
         )
@@ -106,10 +107,11 @@ class Function(RegItem):
     """
     Represents a registered function.
     """
+
     def get_cname(self):
         return (self.item.__module__, self.item.__qualname__)
 
-    def get_dev_config_paths(self):
+    def get_dev_config_paths(self, target: str = None):
         configs_parent = Path(self.m.__file__).parent
 
         dev_configs = None
@@ -119,11 +121,14 @@ class Function(RegItem):
         if isinstance(dev_configs, str):
             cfg_path = Path(dev_configs)
             return init_default_dev_configs(
-                configs_parent, cfg_path.stem, cfg_path.suffix
+                configs_parent,
+                cfg_path.stem,
+                target=target,
+                base_file_ext=cfg_path.suffix,
             )
 
         base_file = "-".join(["pyconject", self.cname[0].split(".")[-1], self.cname[1]])
-        _temp_dict = init_default_dev_configs(configs_parent, base_file)
+        _temp_dict = init_default_dev_configs(configs_parent, base_file, target=target)
 
         if isinstance(dev_configs, dict):
             for k, v in dev_configs.items():
@@ -136,10 +141,11 @@ class Class(RegItem):
     """
     Represents a registered class.
     """
+
     def get_cname(self):
         return (self.item.__module__, self.item.__qualname__)
 
-    def get_dev_config_paths(self):
+    def get_dev_config_paths(self, target: str = None):
         configs_parent = Path(self.m.__file__).parent
 
         dev_configs = None
@@ -149,11 +155,14 @@ class Class(RegItem):
         if isinstance(dev_configs, str):
             cfg_path = Path(dev_configs)
             return init_default_dev_configs(
-                configs_parent, cfg_path.stem, cfg_path.suffix
+                configs_parent,
+                cfg_path.stem,
+                target=target,
+                base_file_ext=cfg_path.suffix,
             )
 
         base_file = "-".join(["pyconject", self.cname[0].split(".")[-1], self.cname[1]])
-        _temp_dict = init_default_dev_configs(configs_parent, base_file)
+        _temp_dict = init_default_dev_configs(configs_parent, base_file, target=target)
 
         if isinstance(dev_configs, dict):
             for k, v in dev_configs.items():
@@ -165,11 +174,12 @@ class Module(RegItem):
     """
     Represents a registered module.
     """
+
     def get_cname(self):
         parts = self.m.__name__.split(".")
         return (".".join(parts[:-1]), parts[-1])
 
-    def get_dev_config_paths(self):
+    def get_dev_config_paths(self, target: str = None):
         configs_parent = Path(self.m.__file__).parent
 
         dev_configs = None
@@ -179,11 +189,14 @@ class Module(RegItem):
         if isinstance(dev_configs, str):
             cfg_path = Path(dev_configs)
             return init_default_dev_configs(
-                configs_parent, cfg_path.stem, cfg_path.suffix
+                configs_parent,
+                cfg_path.stem,
+                target=target,
+                base_file_ext=cfg_path.suffix,
             )
 
         base_file = "-".join(["pyconject", self.cname[1]])
-        _temp_dict = init_default_dev_configs(configs_parent, base_file)
+        _temp_dict = init_default_dev_configs(configs_parent, base_file, target=target)
 
         if isinstance(dev_configs, dict):
             for k, v in dev_configs.items():
@@ -192,16 +205,16 @@ class Module(RegItem):
         return _temp_dict  # this also covers when self.configs is None
 
 
-
 class Package(RegItem):
     """
     Represents a registered package.
     """
+
     def get_cname(self):
         parts = self.m.__name__.split(".")
         return (".".join(parts[:-1]), parts[-1])
 
-    def get_dev_config_paths(self):
+    def get_dev_config_paths(self, target: str = None):
         configs_parent = Path(self.m.__file__).parent
 
         dev_configs = None
@@ -211,11 +224,14 @@ class Package(RegItem):
         if isinstance(dev_configs, str):
             cfg_path = Path(dev_configs)
             return init_default_dev_configs(
-                configs_parent, cfg_path.stem, cfg_path.suffix
+                configs_parent,
+                cfg_path.stem,
+                target=target,
+                base_file_ext=cfg_path.suffix,
             )
 
         base_file = "pyconject"
-        _temp_dict = init_default_dev_configs(configs_parent, base_file)
+        _temp_dict = init_default_dev_configs(configs_parent, base_file, target=target)
 
         if isinstance(dev_configs, dict):
             for k, v in dev_configs.items():
@@ -338,6 +354,7 @@ class Registry:
         _registry (dict): A dictionary of registered items.
         _loaded_dev_configs (dict): Cached development configurations.
     """
+
     def __init__(self, cntx_stack):
         self._cntx_stack = cntx_stack
         self._registry = {}
@@ -401,7 +418,7 @@ class Registry:
 
         configs = {}
         for reg_item in sorted_reg_items:
-            dev_config_path = reg_item.get_dev_config_paths()
+            dev_config_path = reg_item.get_dev_config_paths(target=target)
             logger.debug(
                 f"dev_config_path of {reg_item.get_cname()} is {dev_config_path}"
             )
