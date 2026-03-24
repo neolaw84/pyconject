@@ -8,6 +8,8 @@
 
 # Usage
 
+> **Note:** `pyconject` requires Python 3.10+. Please be aware that Python 3.10 is nearing its end-of-life for security fixes (October 2026), so upgrading to a newer version is recommended.
+
 For detailed usage, refer to [usage](docs/usage.md).
 
 ## TL;DR
@@ -38,10 +40,10 @@ With `pyconject`, we can do this:
 # in usr_p/usr_sp/usr_m.py
 from black_p.black_sp.black_m import black_func
 
-# pyconject initializes all callables in the global namespace.
 from pyconject import pyconject
 
-pyconject.wrap(globals())
+# Explicitly wrap the specific function (or module)
+black_func = pyconject.wrap(black_func)
 
 with pyconject.cntx():
     black_func() 

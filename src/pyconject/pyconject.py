@@ -106,7 +106,8 @@ def wrap(*targets):
 
 def init(caller_globals):
     """
-    Initializes `pyconject` by registering all global functions and classes.
+    DEPRECATED: Initializes `pyconject` by registering all global functions and classes.
+    Please use the explicit `wrap(*targets)` method instead.
 
     Args:
         caller_globals (dict): The global namespace of the caller. Usually, obtained by calling `globals()`.
