@@ -43,6 +43,12 @@ class DevUsageTest(TestCase):
             a, b, c, d = dev_func(1, 2)
             assert (a, b, c, d) == (1, 2, 303, "404-dev")
 
+    def test_cntx_target_qa(self):
+        pyconject.init(globals())
+        with pyconject.cntx(target="qa"):
+            a, b, c, d = dev_func(1, 2)
+            assert (a, b, c, d) == (1, 2, 303, "404-qa")
+
     def test_cntx_default_sp(self):
         a, b, c, d = dev_func_sp(1, 2)
         assert (a, b, c, d) == (1, 2, 3003, 404)

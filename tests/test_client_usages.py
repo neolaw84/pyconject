@@ -242,3 +242,26 @@ class ClientUsageTest(TestCase):
                 assert black_class.a == "a"
                 results = black_class.black_method()
                 assert results == ("a", "b")
+
+    def test_wrap_single_callable(self):
+        from black_p.black_sp.black_m import black_func
+        wrapped = pyconject.wrap(black_func)
+        assert wrapped is not None
+        assert getattr(wrapped, "__pyconject_wrapped__", False) is True
+
+    def test_wrap_module_in_place(self):
+        import black_p.black_sp.black_m as black_m
+        pyconject.wrap(black_m)
+        assert getattr(black_m, "__pyconject_wrapped__", False) is True
+        # Verify that functions within are also wrapped
+        assert getattr(black_m.black_func, "__pyconject_wrapped__", False) is True
+
+    def test_init_deprecation_warning(self):
+        import pytest
+        # Use a fresh dict to avoid re-wrapping existing globals if possible,
+        # but the warning should trigger anyway because we call init.
+        with pytest.warns(
+            DeprecationWarning,
+            match="pyconject.init\(globals\(\)\) is deprecated",
+        ):
+            pyconject.init({})

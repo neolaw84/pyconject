@@ -10,7 +10,7 @@ authors = [
 ]
 description = "pyconject --- a highly opinionated PYthon CONfig inJECTor library."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -29,8 +29,15 @@ pythonpath = [
   "src", "tests"
 ]
 
+[tool.pyright]
+include = ["src", "tests"]
+exclude = ["**/__pycache__"]
+venvPath = "."
+venv = "venv"
+extraPaths = ["src"]
+
 [tool.bumpversion]
-current_version = "0.1.6"
+current_version = "0.2.0"
 parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<micro>\\d+)"
 serialize = ["{major}.{minor}.{micro}"]
 search = "{current_version}"
