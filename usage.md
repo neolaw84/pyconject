@@ -57,19 +57,19 @@ Imagine this script needs to initialize a lot of variables such as `a`, `b`, `c`
 # in usr_p/usr_sp/usr_m.py
 from black_p.black_sp.black_m import black_func
 
-# pyconject initializes values of a, b, c and d.
+# pyconject initializes all callables in the global namespace.
 from pyconject import pyconject
 
-pyconject.init(globals())
+pyconject.wrap(globals())
 
 with pyconject.cntx():
-    black_func() 
+    black_func()
 ```
 
 Notice, there needs just 3 lines of code to let `pyconject` inject the configs defined in the current working directory:
 
 1. importing pyconject: `from pyconject import pyconject`
-2. letting `pyconject` knows that it needs to manage `globals()` dictionary: `pyconject.init(globals())`
+2. letting `pyconject` knows that it needs to manage callables in the `globals()` dictionary: `pyconject.wrap(globals())`
 3. running `black_func` in the `pyconject` context: `with pyconject.cntx():`
 
 In this specific example, `pyconject` will inject a=1, b=2, c=3 and d=4 into the running script.
@@ -141,16 +141,16 @@ black_p:
 # in usr_p/usr_sp/usr_m.py
 from black_p.black_sp.black_m import black_func
 
-# initialize values of a, b, c and d.
+# initialize callables in global namespace.
 from pyconject import pyconject
 
-pyconject.init(globals())
+pyconject.wrap(globals())
 
 with pyconject.cntx(
         config_path="/path/to/user/defined/configs/cfg.yml", 
         target="dev"
     ):
-    black_func(a=a, b=b, c=c, d=d)
+    black_func()
 ```
 
 `pyconject` will inject configs in `cfg.yml` and `cfg-dev.yml` as a = 1, b = 2, c = 30 and d = 40. 
@@ -161,9 +161,45 @@ with pyconject.cntx(
 
 > Explicit is better than implicit. [[PEP-20]](https://peps.python.org/pep-0020/)
 
-Even though users can initialize `pyconject` by calling `pyconject.init` to have parameters injected into any function, it will be better if `pyconject` allows developer of python libraries to ***explictly*** pre-initialize/pre-register their functions (and modules) for the user scripts. 
+Even though users can initialize `pyconject` by calling `pyconject.wrap` on `globals()` to have parameters injected into any function, it will be better if `pyconject` allows developer of python libraries (or client users) to ***explicitly*** wrap individual functions or modules.
 
-In addition, they can define default parameter values and `target`-specific parameter values. 
+### 2.1. Wrapping individual items
+
+If you prefer not to mutate the global namespace, you can wrap a single function:
+
+```python
+from black_p.black_sp.black_m import black_func
+from pyconject import pyconject
+
+# wrap returns the wrapped function
+black_func = pyconject.wrap(black_func)
+
+with pyconject.cntx():
+    black_func()
+```
+
+You can also wrap multiple items at once:
+
+```python
+func1, func2 = pyconject.wrap(func1, func2)
+```
+
+### 2.2. Patching a module in-place
+
+If you want to patch all functions and classes in a module, you can pass the module object to `wrap()`:
+
+```python
+import black_p.black_sp.black_m as black_m
+from pyconject import pyconject
+
+# wrap patches the module and returns None for module targets
+pyconject.wrap(black_m)
+
+with pyconject.cntx():
+    black_m.black_func() 
+```
+
+In addition, developers can define default parameter values and `target`-specific parameter values. 
 
 > Notice that the user can overwrite these defaults either using `pyconject` or directly in their code. 
 > 

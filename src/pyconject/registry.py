@@ -277,6 +277,9 @@ def _create_reg_item(item) -> RegItem:
 
 
 def _register_func(f, cntx_stack):
+    if getattr(f, "__pyconject_wrapped__", False):
+        return f
+
     @functools.wraps(f)
     def wrapper_func(*args, **kwargs):
         # Get the function signature.
@@ -300,10 +303,14 @@ def _register_func(f, cntx_stack):
         value = f(*args, **kwargs)
         return value
 
+    wrapper_func.__pyconject_wrapped__ = True
     return wrapper_func
 
 
 def _register_class(cls, cntx_stack):
+    if getattr(cls, "__pyconject_wrapped__", False):
+        return cls
+
     @functools.wraps(cls)
     def wrapper_func(*args, **kwargs):
         # Get the function signature.
@@ -342,6 +349,7 @@ def _register_class(cls, cntx_stack):
 
         return value
 
+    wrapper_func.__pyconject_wrapped__ = True
     return wrapper_func
 
 

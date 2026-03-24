@@ -11,7 +11,8 @@ import logging
 import inspect
 
 from .registry import Registry
-from .utils import Stack, load_and_merge_configs, merge_dictionaries
+from .utils import Stack, merge_dictionaries
+from .providers import DeveloperConfigProvider, ClientYamlProvider
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -85,40 +86,58 @@ class CntxStack:
         self.target_stack = Stack()
         self.registry = Registry(self)
 
-    def _resolve_dev_configs(self, target=None):
-        dev_configs = self.registry.load_dev_configs(force=True, target=target)
-        self.config_stack.push(dev_configs)
-        self.target_stack.push(target)
-        return dev_configs
-
     def stack(self, target=None, config_path=None):
+        """
+        Stack a new configuration context using the provider pattern.
+
+        This method creates a list of configuration providers, sorts them by priority,
+        and merges their configurations together.
+
+        Args:
+            target (str): The target environment (e.g., "dev", "qa", "prd").
+            config_path (str or Path or dict): Path to the client config file(s).
+
+        Returns:
+            dict: The merged configuration dictionary.
+        """
+        # Get the base (previous) configuration from the stack
         prev_configs = self.config_stack.peek()
+
+        # Create a list of providers for this context
+        providers = []
+
+        # If no previous config exists, add developer config providers
         if prev_configs is None:
-            prev_configs = self._resolve_dev_configs(target=None)
-        if target is not None:
-            prev_configs_target = self._resolve_dev_configs(target=target)
-            prev_configs = merge_dictionaries(prev_configs, prev_configs_target)
-        # at this point, prev_configs is not None
-        configs = deepcopy(prev_configs)
-        if config_path is None:
-            config_path = "./configs.yml"
-        if isinstance(config_path, str):
-            config_path_ = Path(config_path)
-        elif isinstance(config_path, dict):
-            config_path_ = Path(config_path.get("", "./configs.yml"))
-
-        logger.debug(f"loading user defined common config from {config_path}")
-        configs = load_and_merge_configs(config_path_, configs)
-
-        if target is not None:
-            tgt_config_path = (
-                config_path_.parent
-                / f"{config_path_.stem}-{target}{config_path_.suffix}"
+            # Add base developer configs provider
+            dev_provider_base = DeveloperConfigProvider(
+                priority=10, registry=self.registry, target=None
             )
-            if isinstance(config_path, dict):
-                tgt_config_path = Path(config_path.get(target, str(tgt_config_path)))
-            logger.debug(f"loading user defined {target} config from {tgt_config_path}")
-            configs = load_and_merge_configs(tgt_config_path, configs)
+            providers.append(dev_provider_base)
+
+            # Add target-specific developer configs provider (if target provided)
+            if target is not None:
+                dev_provider_target = DeveloperConfigProvider(
+                    priority=11, registry=self.registry, target=target
+                )
+                providers.append(dev_provider_target)
+
+        # Client YAML provider for user-provided configurations
+        client_provider = ClientYamlProvider(
+            priority=20,
+            config_path=config_path,
+            target=target,
+            base_configs=prev_configs if prev_configs is not None else {},
+        )
+        providers.append(client_provider)
+
+        # Sort providers by priority (lowest to highest)
+        providers.sort(key=lambda p: p.priority)
+
+        # Merge configurations from all providers
+        configs = {}
+        for provider in providers:
+            provider_config = provider.load()
+            configs = merge_dictionaries(configs, provider_config)
 
         self.config_stack.push(configs)
         self.target_stack.push(target)
@@ -132,12 +151,10 @@ class CntxStack:
         return self.config_stack.peek()  # if len(self.config_stack) > 1 else {}
 
     def unstack(self):
-        if self.target_stack.peek():
+        if len(self.config_stack) > 0:
             self.config_stack.pop()
+        if len(self.target_stack) > 0:
             self.target_stack.pop()
-        self.config_stack.pop()
-        self.target_stack.pop()
-        # if len(self.config_stack) == 1: self.config_stack.pop()
 
 
 _cntx_stack = CntxStack()
