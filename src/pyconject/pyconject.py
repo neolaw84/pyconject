@@ -83,7 +83,7 @@ def wrap(*targets):
 
             for name, item in vars(target).items():
                 if (
-                    inspect.isfunction(item) or inspect.isclass(item)
+                    inspect.isfunction(item)
                 ) and inspect.getmodule(item) is target:
                     wrapped = _cntx_stack.registry.register(item, by_dev=False)
                     setattr(target, name, wrapped)
