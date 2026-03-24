@@ -38,10 +38,10 @@ With `pyconject`, we can do this:
 # in usr_p/usr_sp/usr_m.py
 from black_p.black_sp.black_m import black_func
 
-# pyconject initializes values of a, b, c and d.
+# pyconject initializes all callables in the global namespace.
 from pyconject import pyconject
 
-pyconject.init(globals())
+pyconject.wrap(globals())
 
 with pyconject.cntx():
     black_func() 
@@ -103,12 +103,12 @@ def dev_func(a, b, c, d):
   * Modules 
   * Packages 
   
-* Client integration
+  * Client integration
   * Functions
   * Classes
   * Modules
   * Packages
-  * Init (with `globals()`)
+  * Smart Wrap (`wrap()`)
 
 * Type of configs
   * **yaml -- priority**

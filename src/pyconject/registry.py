@@ -55,6 +55,7 @@ class RegItem(ABC):
         cname (tuple): The canonical name of the item.
         prefix (str): The prefix for configuration keys.
     """
+
     def __init__(
         self, item: Union[Callable, str], reg_item_type: RegItemType, file_path: Path, m
     ):
@@ -75,17 +76,16 @@ class RegItem(ABC):
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, RegItem):
             return False
-        return all(
-            self.item == value.item,
-            self.reg_item_type == value.reg_item_type,
-            self.file_path == value.file_path,
-            # self.configs == value.configs,
-            self.m == value.m,
-            self.cname == value.cname,
+        return (
+            self.item == value.item
+            and self.reg_item_type == value.reg_item_type
+            and self.file_path == value.file_path
+            and self.m == value.m
+            and self.cname == value.cname
         )
 
     @abstractmethod
-    def get_dev_config_paths(self):
+    def get_dev_config_paths(self, target: str = None):
         raise NotImplementedError(
             "entry is an abstract class and hasn't implemented get_dev_config_paths."
         )
@@ -106,10 +106,11 @@ class Function(RegItem):
     """
     Represents a registered function.
     """
+
     def get_cname(self):
         return (self.item.__module__, self.item.__qualname__)
 
-    def get_dev_config_paths(self):
+    def get_dev_config_paths(self, target: str = None):
         configs_parent = Path(self.m.__file__).parent
 
         dev_configs = None
@@ -119,11 +120,14 @@ class Function(RegItem):
         if isinstance(dev_configs, str):
             cfg_path = Path(dev_configs)
             return init_default_dev_configs(
-                configs_parent, cfg_path.stem, cfg_path.suffix
+                configs_parent,
+                cfg_path.stem,
+                target=target,
+                base_file_ext=cfg_path.suffix,
             )
 
         base_file = "-".join(["pyconject", self.cname[0].split(".")[-1], self.cname[1]])
-        _temp_dict = init_default_dev_configs(configs_parent, base_file)
+        _temp_dict = init_default_dev_configs(configs_parent, base_file, target=target)
 
         if isinstance(dev_configs, dict):
             for k, v in dev_configs.items():
@@ -136,10 +140,11 @@ class Class(RegItem):
     """
     Represents a registered class.
     """
+
     def get_cname(self):
         return (self.item.__module__, self.item.__qualname__)
 
-    def get_dev_config_paths(self):
+    def get_dev_config_paths(self, target: str = None):
         configs_parent = Path(self.m.__file__).parent
 
         dev_configs = None
@@ -149,11 +154,14 @@ class Class(RegItem):
         if isinstance(dev_configs, str):
             cfg_path = Path(dev_configs)
             return init_default_dev_configs(
-                configs_parent, cfg_path.stem, cfg_path.suffix
+                configs_parent,
+                cfg_path.stem,
+                target=target,
+                base_file_ext=cfg_path.suffix,
             )
 
         base_file = "-".join(["pyconject", self.cname[0].split(".")[-1], self.cname[1]])
-        _temp_dict = init_default_dev_configs(configs_parent, base_file)
+        _temp_dict = init_default_dev_configs(configs_parent, base_file, target=target)
 
         if isinstance(dev_configs, dict):
             for k, v in dev_configs.items():
@@ -165,11 +173,12 @@ class Module(RegItem):
     """
     Represents a registered module.
     """
+
     def get_cname(self):
         parts = self.m.__name__.split(".")
         return (".".join(parts[:-1]), parts[-1])
 
-    def get_dev_config_paths(self):
+    def get_dev_config_paths(self, target: str = None):
         configs_parent = Path(self.m.__file__).parent
 
         dev_configs = None
@@ -179,11 +188,14 @@ class Module(RegItem):
         if isinstance(dev_configs, str):
             cfg_path = Path(dev_configs)
             return init_default_dev_configs(
-                configs_parent, cfg_path.stem, cfg_path.suffix
+                configs_parent,
+                cfg_path.stem,
+                target=target,
+                base_file_ext=cfg_path.suffix,
             )
 
         base_file = "-".join(["pyconject", self.cname[1]])
-        _temp_dict = init_default_dev_configs(configs_parent, base_file)
+        _temp_dict = init_default_dev_configs(configs_parent, base_file, target=target)
 
         if isinstance(dev_configs, dict):
             for k, v in dev_configs.items():
@@ -192,16 +204,16 @@ class Module(RegItem):
         return _temp_dict  # this also covers when self.configs is None
 
 
-
 class Package(RegItem):
     """
     Represents a registered package.
     """
+
     def get_cname(self):
         parts = self.m.__name__.split(".")
         return (".".join(parts[:-1]), parts[-1])
 
-    def get_dev_config_paths(self):
+    def get_dev_config_paths(self, target: str = None):
         configs_parent = Path(self.m.__file__).parent
 
         dev_configs = None
@@ -211,11 +223,14 @@ class Package(RegItem):
         if isinstance(dev_configs, str):
             cfg_path = Path(dev_configs)
             return init_default_dev_configs(
-                configs_parent, cfg_path.stem, cfg_path.suffix
+                configs_parent,
+                cfg_path.stem,
+                target=target,
+                base_file_ext=cfg_path.suffix,
             )
 
         base_file = "pyconject"
-        _temp_dict = init_default_dev_configs(configs_parent, base_file)
+        _temp_dict = init_default_dev_configs(configs_parent, base_file, target=target)
 
         if isinstance(dev_configs, dict):
             for k, v in dev_configs.items():
@@ -261,6 +276,9 @@ def _create_reg_item(item) -> RegItem:
 
 
 def _register_func(f, cntx_stack):
+    if getattr(f, "__pyconject_wrapped__", False):
+        return f
+
     @functools.wraps(f)
     def wrapper_func(*args, **kwargs):
         # Get the function signature.
@@ -284,49 +302,65 @@ def _register_func(f, cntx_stack):
         value = f(*args, **kwargs)
         return value
 
+    wrapper_func.__pyconject_wrapped__ = True
     return wrapper_func
 
 
 def _register_class(cls, cntx_stack):
-    @functools.wraps(cls)
-    def wrapper_func(*args, **kwargs):
-        # Get the function signature.
-        sig = inspect.signature(cls)
+    if getattr(cls, "__pyconject_wrapped__", False):
+        return cls
 
-        # Bind the given arguments to the function signature.
-        bound_args = sig.bind_partial(*args, **kwargs)
+    # Standard library classes (including Path, os.PathLike) are notoriously hard to subclass safely
+    # and shouldn't be patched in-place anyway.
+    if cls.__module__ and (
+        cls.__module__.startswith(("pathlib", "os", "sys", "builtins", "tempfile"))
+    ):
+        return cls
 
-        # Iterate over the parameters in the function signature.
-        reg_item = _create_reg_item(item=cls)
-        configs = cntx_stack.get_configs()
-        kw_args = get_from_prefixed_tree(prefix=reg_item.prefix, tree=configs)
-        if kw_args:
-            for param_name, param in sig.parameters.items():
-                # If a parameter is missing from the bound arguments
-                # and present in the configs in the dictionary at top
-                # of cntx_stack, use the value from the dictionary.
+    class WrappedClass(cls):
+        def __init__(self, *args, **kwargs):
+            # Signature on the original class for parameter injection
+            sig = inspect.signature(cls)
+            bound_args = sig.bind_partial(*args, **kwargs)
 
+            reg_item = _create_reg_item(item=cls)
+            configs = cntx_stack.get_configs()
+            kw_args = get_from_prefixed_tree(prefix=reg_item.prefix, tree=configs)
+
+            if kw_args:
                 kw_args__init__ = kw_args.get("__init__", {})
-                if (
-                    param_name not in bound_args.arguments
-                    and param_name in kw_args__init__
-                ):
-                    kwargs[param_name] = kw_args__init__[param_name]
-        value = cls(*args, **kwargs)
+                for param_name, param in sig.parameters.items():
+                    if (
+                        param_name not in bound_args.arguments
+                        and param_name in kw_args__init__
+                    ):
+                        kwargs[param_name] = kw_args__init__[param_name]
 
-        # Wrap instance methods
-        for attr_name, attr_value in vars(cls).items():
-            if (
-                callable(attr_value)
-                and not attr_name.startswith("__")
-                and attr_name in kw_args.keys()
-            ):
-                wrapped_method = _register_func(attr_value, cntx_stack)
-                setattr(value, attr_name, types.MethodType(wrapped_method, value))
+            # Some classes (like builtins or those using __new__ magic) don't have
+            # standard __init__. We use super().__init__ safely.
+            try:
+                super().__init__(*args, **kwargs)
+            except (TypeError, AttributeError):
+                # fallback for classes like object that don't take args in __init__
+                if not args and not kwargs:
+                    pass
+                else:
+                    raise
 
-        return value
+            # Wrap instance methods
+            if kw_args:
+                for attr_name, attr_value in vars(cls).items():
+                    if (
+                        callable(attr_value)
+                        and not attr_name.startswith("__")
+                        and attr_name in kw_args.keys()
+                    ):
+                        wrapped_method = _register_func(attr_value, cntx_stack)
+                        setattr(self, attr_name, types.MethodType(wrapped_method, self))
 
-    return wrapper_func
+    functools.update_wrapper(WrappedClass, cls, updated=())
+    WrappedClass.__pyconject_wrapped__ = True
+    return WrappedClass
 
 
 class Registry:
@@ -338,6 +372,7 @@ class Registry:
         _registry (dict): A dictionary of registered items.
         _loaded_dev_configs (dict): Cached development configurations.
     """
+
     def __init__(self, cntx_stack):
         self._cntx_stack = cntx_stack
         self._registry = {}
@@ -401,7 +436,7 @@ class Registry:
 
         configs = {}
         for reg_item in sorted_reg_items:
-            dev_config_path = reg_item.get_dev_config_paths()
+            dev_config_path = reg_item.get_dev_config_paths(target=target)
             logger.debug(
                 f"dev_config_path of {reg_item.get_cname()} is {dev_config_path}"
             )

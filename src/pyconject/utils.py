@@ -57,12 +57,14 @@ def get_from_prefixed_tree(tree: Dict, prefix: str):
     return tree
 
 
-def init_default_dev_configs(configs_parent, base_file_stem, base_file_ext=".yml"):
-    _dict = {
-        t: str(configs_parent / ("-".join([base_file_stem, t]) + base_file_ext))
-        for t in ["stg", "dev", "prd"]
-    }
-    _dict[""] = str(configs_parent / base_file_stem) + base_file_ext
+def init_default_dev_configs(
+    configs_parent, base_file_stem, target=None, base_file_ext=".yml"
+):
+    _dict = {"": str(configs_parent / (base_file_stem + base_file_ext))}
+    if target:
+        _dict[target] = str(
+            configs_parent / f"{base_file_stem}-{target}{base_file_ext}"
+        )
     return _dict
 
 
@@ -202,6 +204,7 @@ class Stack:
         peek(): Returns the top item without removing it.
         is_empty(): Checks if the stack is empty.
     """
+
     def __init__(self):
         self._items = []
 
