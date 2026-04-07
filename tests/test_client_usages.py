@@ -47,6 +47,10 @@ class ClientUsageTest(TestCase):
             pyconject._cntx_stack.config_stack.pop()
         while len(pyconject._cntx_stack.target_stack) > 0:
             pyconject._cntx_stack.target_stack.pop()
+        # Access the original function through its module to avoid grabbing a
+        # pyconject-wrapped version that may exist in this test module's globals.
+        import pyconject.utils as _pyconject_utils
+        _pyconject_utils.resolve_reference.yml_file_cache = {}
 
     def tearDown(self) -> None:
         remove_file_or_directory(Path("tests/cfgs.yml"))
@@ -255,6 +259,125 @@ class ClientUsageTest(TestCase):
         assert getattr(black_m, "__pyconject_wrapped__", False) is True
         # Verify that functions within are also wrapped
         assert getattr(black_m.black_func, "__pyconject_wrapped__", False) is True
+
+    def test_cntx_with_tree_references(self):
+        """Test that @filepath:path.to.config works when the referenced value is a tree (dict)."""
+        # Reference points to a whole function config subtree (not just individual leaf values)
+        configs = yaml.dump(
+            {
+                "black_p": {
+                    "black_sp": {
+                        "black_m": {
+                            "black_func": "@config-main.yml:black_func_configs"
+                        }
+                    }
+                }
+            }
+        )
+        config_main = yaml.dump(
+            {
+                "black_func_configs": {
+                    "a": "tree-a",
+                    "b": "tree-b",
+                    "c": "tree-c",
+                    "d": "tree-d",
+                }
+            }
+        )
+
+        with patch(
+            "builtins.open",
+            get_dynamic_mock_open(
+                {
+                    (Path("./config.yml"), "rt"): configs,
+                    (Path("./config-main.yml"), "rt"): config_main,
+                }
+            ),
+        ):
+            pyconject.init(globals())
+            with pyconject.cntx(config_path="./config.yml"):
+                a, b, c, d = black_func()
+                assert (a, b, c, d) == ("tree-a", "tree-b", "tree-c", "tree-d")
+
+    def test_cntx_with_higher_tree_references(self):
+        """Test that @filepath:path.to.config works for module-level subtree references."""
+        # Reference points to an entire module config subtree
+        configs = yaml.dump(
+            {
+                "black_p": {
+                    "black_sp": {
+                        "black_m": "@config-main.yml:black_m_configs"
+                    }
+                }
+            }
+        )
+        config_main = yaml.dump(
+            {
+                "black_m_configs": {
+                    "black_func": {
+                        "a": "module-a",
+                        "b": "module-b",
+                        "c": "module-c",
+                        "d": "module-d",
+                    }
+                }
+            }
+        )
+
+        with patch(
+            "builtins.open",
+            get_dynamic_mock_open(
+                {
+                    (Path("./config.yml"), "rt"): configs,
+                    (Path("./config-main.yml"), "rt"): config_main,
+                }
+            ),
+        ):
+            pyconject.init(globals())
+            with pyconject.cntx(config_path="./config.yml"):
+                a, b, c, d = black_func()
+                assert (a, b, c, d) == ("module-a", "module-b", "module-c", "module-d")
+
+    def test_cntx_with_nested_tree_references(self):
+        """Test that @filepath references within a resolved tree are also resolved (nested refs)."""
+        # The top-level config points to a subtree, and that subtree itself has @refs
+        configs = yaml.dump(
+            {
+                "black_p": {
+                    "black_sp": {
+                        "black_m": {
+                            "black_func": "@config-main.yml:black_func_configs"
+                        }
+                    }
+                }
+            }
+        )
+        config_main = yaml.dump(
+            {
+                "black_func_configs": {
+                    "a": "main-a",
+                    "b": "main-b",
+                    "c": "@config-deep.yml:deep_c",  # nested @reference within resolved tree
+                    "d": "main-d",
+                }
+            }
+        )
+        config_deep = yaml.dump({"deep_c": "deep-c-value"})
+
+        with patch(
+            "builtins.open",
+            get_dynamic_mock_open(
+                {
+                    (Path("./config.yml"), "rt"): configs,
+                    (Path("./config-main.yml"), "rt"): config_main,
+                    (Path("./config-deep.yml"), "rt"): config_deep,
+                }
+            ),
+        ):
+            pyconject.init(globals())
+            with pyconject.cntx(config_path="./config.yml"):
+                a, b, c, d = black_func()
+                assert (a, b, c, d) == ("main-a", "main-b", "deep-c-value", "main-d")
 
     def test_init_deprecation_warning(self):
         import pytest
