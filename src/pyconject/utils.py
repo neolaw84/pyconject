@@ -133,10 +133,15 @@ resolve_reference.yml_file_cache = {}
 def resolve_references_in_dict(data: dict, config_path: Path) -> dict:
     """
     Recursively resolves references in a dictionary, using `config_path` for relative paths.
+    When a string value resolves to a dict (tree), the resulting dict is also processed
+    recursively so that nested references within it are resolved as well.
     """
     for key, value in data.items():
         if isinstance(value, str):
-            data[key] = resolve_reference(value, config_path)
+            resolved = resolve_reference(value, config_path)
+            if isinstance(resolved, dict):
+                resolved = resolve_references_in_dict(resolved, config_path)
+            data[key] = resolved
         elif isinstance(value, dict):
             data[key] = resolve_references_in_dict(value, config_path)
     return data
